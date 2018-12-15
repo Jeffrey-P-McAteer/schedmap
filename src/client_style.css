@@ -1,0 +1,47 @@
+html, body {
+  background: #e0e0e0;
+}
+
+/* Mostly copy-paste from a blog post on vanilla JS tabs. There's never a "nice" or "elegant" html tab implementation. */
+.tabContainer{
+  margin:10px 0;
+  width:400px;
+}
+.tabContainer .digiTabs{
+  list-style:none;
+  display:block;
+  overflow:hidden;
+  margin:0;
+  padding:0px;
+  position:relative;
+  top:1px;
+}
+.tabContainer .digiTabs li {
+  float:left;
+  background-color:#46AAF7;
+  padding:5px!important;
+  cursor:pointer;
+  margin-right:10px;
+  font-family:verdana;
+  font-size:.8em;
+  font-weight:bold;
+  color:#fff;
+}
+.tabContainer .digiTabs .selected{
+  background-color:#fff;
+  color:#393939;
+}
+#tabContent{
+  padding:10px;
+  background-color:#fff;
+  overflow:hidden;
+  float:left;
+  margin-bottom:10px;
+  border:1px solid #020202;
+  border-width: 1px 0 0 0;
+  width:93%;
+  margin-top: 1px;
+}
+.tabContainer, .tabContent {
+  width: 100%;
+}

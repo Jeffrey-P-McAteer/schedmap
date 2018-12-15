@@ -87,7 +87,10 @@ fn run_server(args: Args) {
     let app = rocket::custom(config);
     
     app.mount("/", routes![
-      routes::index
+      routes::index,
+      routes::style,
+      routes::app_js,
+      
     ]).launch();
     
   });
