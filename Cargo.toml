@@ -1,0 +1,17 @@
+[package]
+name = "schedmap"
+version = "0.1.0"
+authors = ["Jeffrey McAteer <jeffrey.p.mcateer@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+rocket = "0.4.0-rc.1"
+
+ws = "0.7.9"
+
+docopt = "1"
+serde = "1.0" # if you're using `derive(Deserialize)`
+serde_derive = "1.0" # if you're using `derive(Deserialize)`
+
+
