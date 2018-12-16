@@ -41,6 +41,15 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
   }
 }
 
+#[get("/app_home.html")]
+pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
+  Html("<html><head></head><body style='background-color: red;'><center>Welcome Home!</center></body></html>")
+}
+
+#[get("/app_locations.html")]
+pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<&'static str> {
+  Html("<center>Locations</center>")
+}
 
 
 

@@ -7,7 +7,7 @@ html, body {
   margin:10px 0;
   width:400px;
 }
-.tabContainer .digiTabs{
+.tabContainer #tabList{
   list-style:none;
   display:block;
   overflow:hidden;
@@ -16,7 +16,7 @@ html, body {
   position:relative;
   top:1px;
 }
-.tabContainer .digiTabs li {
+.tabContainer #tabList li {
   float:left;
   background-color:#46AAF7;
   padding:5px!important;
@@ -27,12 +27,19 @@ html, body {
   font-weight:bold;
   color:#fff;
 }
-.tabContainer .digiTabs .selected{
+.tabContainer #tabList li a {
+  color: #000;
+  text-decoration: none;
+}
+.tabContainer #tabList .selected {
   background-color:#fff;
   color:#393939;
 }
-#tabContent{
-  padding:10px;
+.tabContainer #tabList .selected li a {
+  color: #393939;
+}
+#tabContent {
+  padding:0;
   background-color:#fff;
   overflow:hidden;
   float:left;

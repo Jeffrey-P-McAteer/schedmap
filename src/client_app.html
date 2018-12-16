@@ -8,36 +8,12 @@
   </head>
   <body onload="tabs(document.getElementById('tab1'));">
     <div class="tabContainer">
-      <ul class="digiTabs" id="sidebarTabs">
-        <li id="tab1" class="selected"  onclick="tabs(this);">Map Overview</li>
-        <li id="tabLocations" onclick="tabs(this);">Edit Locations</li>
-        <li id="tabRoles"  onclick="tabs(this);">Edit Roles</li>
-        <li id="tabEvtStream"  onclick="tabs(this);">View Event Stream</li>
+      <ul id="tabList">
+        <a href="app_home.html" target="tabContent">      <li onclick="tabs(this);" class="selected">Main</li> </a>
+        <a href="app_locations.html" target="tabContent"> <li onclick="tabs(this);">Locations</li> </a>
       </ul>
-      <!-- Javascript just copy-and-pastes the content of the below divs into this one when it it selected -->
-      <div id="tabContent"></div>
+      <iframe id="tabContent" name="tabContent" src="app_home.html"></iframe>
     </div>
-
-<div id="tab1Content" style="display:none;">
-  <center>TODO make a map</center>
-  <br>
-  <img src="https://www.odu.edu/etc/designs/odu/images/logo-university.png" alt="odu" height="250px" />
-</div>
-
-<div id="tabLocationsContent" style="display:none;">
-  <center>TODO map .svg file upload form?</center>
-</div>
-
-<div id="tabRolesContent" style="display:none;">
-  <center>TODO map .svg file upload form?</center>
-</div>
-
-<div id="tabEvtStreamContent" style="display:none;">
-  <textarea readonly="true">
-  </textarea>
-  
-</div>
-
     
   </body>
 </html>

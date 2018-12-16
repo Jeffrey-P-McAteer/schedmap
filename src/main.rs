@@ -100,6 +100,9 @@ fn run_server(args: Args) {
       routes::app_js,
       routes::debug,
       
+      routes::app_home,
+      routes::app_locations,
+      
     ]).launch();
     
   });
