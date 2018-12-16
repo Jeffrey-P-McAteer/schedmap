@@ -9,9 +9,15 @@ extern crate ws;
 extern crate docopt;
 use docopt::Docopt;
 
+#[macro_use] extern crate lazy_static;
+
 use std::thread;
 
+// Holds HTTP route functions responsible for passing data into and out of client apps
 mod routes;
+// Holds shared state data; responsible for locking references
+// and ensuring state is straightforward to change from `routes`
+mod state;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 const USAGE: &'static str = r#"
@@ -90,6 +96,7 @@ fn run_server(args: Args) {
       routes::index,
       routes::style,
       routes::app_js,
+      routes::debug,
       
     ]).launch();
     
