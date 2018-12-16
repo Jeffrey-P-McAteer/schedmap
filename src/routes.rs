@@ -15,17 +15,17 @@ pub fn index(gcs_bundle: GCSBundle) -> Html<&'static str> {
       println!("{}", e);
     }
   }
-  Html(include_str!("client_app.html"))
+  Html(include_str!("www/client_app.html"))
 }
 
 #[get("/app.js")]
 pub fn app_js() -> JavaScript<&'static str> {
-  JavaScript(include_str!("client_app.js"))
+  JavaScript(include_str!("www/client_app.js"))
 }
 
 #[get("/style.css")]
 pub fn style() -> Css<&'static str> {
-  Css(include_str!("client_style.css"))
+  Css(include_str!("www/client_style.css"))
 }
 
 #[get("/debug")]
