@@ -11,6 +11,8 @@ use docopt::Docopt;
 
 #[macro_use] extern crate lazy_static;
 
+extern crate directories;
+
 use std::thread;
 
 // Holds HTTP route functions responsible for passing data into and out of client apps

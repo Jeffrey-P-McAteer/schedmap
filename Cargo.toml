@@ -16,3 +16,6 @@ serde_derive = "1.0" # if you're using `derive(Deserialize)`
 
 # Used to construct global state singleton
 lazy_static = "1.2.0"
+
+# Used to setermina long-term config directory location
+directories = "1.0"

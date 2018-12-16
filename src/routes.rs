@@ -31,8 +31,9 @@ pub fn style() -> Css<&'static str> {
 #[get("/debug")]
 pub fn debug(gcs_bundle: GCSBundle) -> String {
   match gcs_bundle.ptr.lock() {
-    Ok(gcs) => {
-      return format!("gcs.num_visitors = {}", gcs.num_visitors);
+    Ok(mut gcs) => {
+      let _x = gcs.get_data_dir();
+      return format!("{:#?}", *gcs);
     },
     Err(e) => {
       return format!("{}", e);
