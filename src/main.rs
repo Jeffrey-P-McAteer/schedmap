@@ -20,6 +20,8 @@ mod routes;
 // Holds shared state data; responsible for locking references
 // and ensuring state is straightforward to change from `routes`
 mod state;
+// Handles all incoming data pings
+mod websockets;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 const USAGE: &'static str = r#"
@@ -80,8 +82,33 @@ fn run_server(args: Args) {
   let ws_args = args.clone();
   let websocket_handle = thread::spawn(move || {
     ws::listen(format!("0.0.0.0:{}", ws_args.flag_websocket_port), |out| {
+      // Spawn thread to listen for broadcasts
+      match state::global_context_singleton.ptr.lock() {
+        Ok(mut gcs) => {
+          // Get a new receiving channel
+          let mut our_broadcast_rx = gcs.broadcast_to_browsers.bus.add_rx();
+          let bcast_out = out.clone();
+          thread::spawn(move || {
+            loop {
+              match our_broadcast_rx.recv() { // blocks
+                Ok(data) => {
+                  bcast_out.send(data).expect("Could not transmit broadcast to websocket");
+                }
+                Err(e) => {
+                  println!("{}", e);
+                }
+              }
+            }
+          });
+          
+        },
+        Err(e) => {
+          println!("{}", e);
+        }
+      }
+      // Return on message handler
       move |msg| {
-        out.send(msg)
+        websockets::handle_incoming(&out, msg)
       }
     }).expect("Error on websocket server");
   });
@@ -99,6 +126,7 @@ fn run_server(args: Args) {
       routes::style,
       routes::app_js,
       routes::debug,
+        routes::debug_toggle,
       
       routes::app_home,
         routes::app_home_map,

@@ -10,11 +10,26 @@ use std::sync::{Arc, Mutex};
 use std::path::{PathBuf};
 use std::fs;
 
-#[derive(Clone, Debug, PartialEq)]
+use bus::Bus;
+use std::fmt;
+
+// Used because we cannot impl fmt::Debug for Bus<String>
+pub struct BusWrapper {
+  pub bus: Bus<String>,
+}
+
+impl fmt::Debug for BusWrapper {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "Bus<String> {{ <bits and bytes> }}")
+  }
+}
+
+#[derive(Debug)]
 pub struct GCS { // Global Context Singleton
   // These fields will be available to all HTTP handlers in routes
   pub num_visitors: u8,
   data_dir: Option<String>,
+  pub broadcast_to_browsers: BusWrapper,
 }
 
 impl GCS {
@@ -54,7 +69,9 @@ impl GCSBundle {
       ptr: Arc::new(Mutex::new(GCS {
         num_visitors: 0,
         data_dir: None,
-        
+        broadcast_to_browsers: BusWrapper {
+          bus: Bus::new(12),
+        }
       })),
     };
   }
@@ -62,7 +79,7 @@ impl GCSBundle {
 
 lazy_static! {
   // This variable stores all global server state data
-  static ref global_context_singleton: GCSBundle = GCSBundle::new();
+  pub static ref global_context_singleton: GCSBundle = GCSBundle::new();
 }
 
 impl<'r, 'a> FromRequest<'r, 'a> for GCSBundle {

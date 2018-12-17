@@ -1,6 +1,6 @@
 
 use rocket::response::content::{Html,Css,JavaScript,Content};
-use rocket::http::ContentType;
+use rocket::http::{ContentType,RawStr};
 
 // "crate::" means us
 use crate::state::*;
@@ -42,6 +42,22 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
   }
 }
 
+#[get("/debug/toggle/<svg_id>")]
+pub fn debug_toggle(gcs_bundle: GCSBundle, svg_id: &RawStr) -> Html<&'static str> {
+  match gcs_bundle.ptr.lock() {
+    Ok(mut gcs) => {
+      // Send a message to everyone listening
+      gcs.broadcast_to_browsers.bus.broadcast(svg_id.to_string());
+    },
+    Err(e) => {
+      println!("{}", e);
+    }
+  }
+  Html("Done")
+}
+
+
+
 #[get("/app_home.html")]
 pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
   Html("<script src=\"app.js\"></script><h1>Home Home Home</h1><object id=\"map\" type=\"image/svg+xml\" data=\"app_home/map.svg\"></object><button onclick='do_lobby();'>Do Lobby</button>")
@@ -56,7 +72,5 @@ pub fn app_home_map(_gcs_bundle: GCSBundle) -> Content<String> {
 pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<&'static str> {
   Html("<center>Locations</center>")
 }
-
-
 
 

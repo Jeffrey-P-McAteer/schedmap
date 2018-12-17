@@ -31,4 +31,17 @@ function change_map_svg_elm_color(elm_id, color) {
   svg_elm.style.fill = color;
 }
 
-
+window.addEventListener("load", function() {
+  // Spawn websocket handler
+  var web_socket = new WebSocket("ws://" + location.hostname + ":8001" + "/");
+  
+  web_socket.onopen = function (evt) {
+    web_socket.send("Hello from a browser!");
+  };
+  
+  web_socket.onmessage = function (evt) {
+    console.log("web_socket got: "+evt.data);
+    change_map_svg_elm_color("Lobby", evt.data);
+  }
+  
+});
