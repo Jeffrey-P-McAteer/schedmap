@@ -15,3 +15,20 @@ function tabs(x)
   x.className="selected"; //the clicked tab gets the classname selected
   
 }
+
+function do_lobby() {
+  if (Math.random() < 0.5) {
+    change_map_svg_elm_color("Lobby", "red");
+  }
+  else {
+    change_map_svg_elm_color("Lobby", "blue");
+  }
+}
+
+function change_map_svg_elm_color(elm_id, color) {
+  var svg_elm = document.getElementById("map").getSVGDocument().getElementById(elm_id);
+  svg_elm.setAttribute("fill", color);
+  svg_elm.style.fill = color;
+}
+
+

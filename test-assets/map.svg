@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="337.79413mm"
+   height="197.21037mm"
+   viewBox="0 0 337.79413 197.21037"
+   version="1.1"
+   id="svg4707"
+   sodipodi:docname="map.svg"
+   inkscape:version="0.92.2 2405546, 2018-03-11">
+  <defs
+     id="defs4701" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="550.68136"
+     inkscape:cy="270.00782"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     inkscape:window-width="2560"
+     inkscape:window-height="1563"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata4704">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Map Layer"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(22.166101,-10.237066)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="-14.148015"
+       y="27.842321"
+       id="text4741"><tspan
+         sodipodi:role="line"
+         id="tspan4739"
+         x="-14.148015"
+         y="27.842321"
+         style="stroke-width:0.26458332">Building A</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4743"
+       width="51.850288"
+       height="37.685001"
+       x="56.678406"
+       y="50.827503" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4745"
+       width="156.61995"
+       height="55.859333"
+       x="-5.0608516"
+       y="87.710693" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Highlight Layer"
+     style="display:inline">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="Lobby"
+       width="51.850288"
+       height="37.685001"
+       x="78.844505"
+       y="40.590435">
+      <desc
+         id="desc4835">Lobby</desc>
+      <title
+         id="title4833">Lobby</title>
+    </rect>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4781"
+       width="78.042702"
+       height="55.592064"
+       x="17.105249"
+       y="77.473633" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4783"
+       width="78.577248"
+       height="55.859325"
+       x="95.147949"
+       y="77.473633"
+       ry="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Labels"
+     style="display:inline">
+    <text
+       transform="translate(22.166101,-10.237066)"
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="66.032837"
+       y="74.347221"
+       id="text4749"><tspan
+         sodipodi:role="line"
+         id="tspan4747"
+         x="66.032837"
+         y="74.347221"
+         style="stroke-width:0.26458332">Lobby</tspan></text>
+    <text
+       transform="translate(22.166101,-10.237066)"
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="87.147133"
+       y="118.17941"
+       id="text4757"><tspan
+         sodipodi:role="line"
+         id="tspan4755"
+         x="87.147133"
+         y="118.17941"
+         style="stroke-width:0.26458332">Desk B</tspan></text>
+    <text
+       transform="translate(22.166101,-10.237066)"
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="10.17351"
+       y="119.51579"
+       id="text4753"><tspan
+         sodipodi:role="line"
+         id="tspan4751"
+         x="10.17351"
+         y="119.51579"
+         style="stroke-width:0.26458332">Desk A</tspan></text>
+  </g>
+</svg>

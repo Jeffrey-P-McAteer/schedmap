@@ -1,5 +1,6 @@
 
-use rocket::response::content::{Html,Css,JavaScript};
+use rocket::response::content::{Html,Css,JavaScript,Content};
+use rocket::http::ContentType;
 
 // "crate::" means us
 use crate::state::*;
@@ -43,7 +44,12 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
 
 #[get("/app_home.html")]
 pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
-  Html("<html><head></head><body style='background-color: red;'><center>Welcome Home!</center></body></html>")
+  Html("<script src=\"app.js\"></script><h1>Home Home Home</h1><object id=\"map\" type=\"image/svg+xml\" data=\"app_home/map.svg\"></object><button onclick='do_lobby();'>Do Lobby</button>")
+}
+
+#[get("/app_home/map.svg")]
+pub fn app_home_map(_gcs_bundle: GCSBundle) -> Content<String> {
+  Content(ContentType::new("image", "svg+xml"), include_str!("../test-assets/map.svg").to_string())
 }
 
 #[get("/app_locations.html")]

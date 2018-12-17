@@ -101,6 +101,8 @@ fn run_server(args: Args) {
       routes::debug,
       
       routes::app_home,
+        routes::app_home_map,
+      
       routes::app_locations,
       
     ]).launch();
