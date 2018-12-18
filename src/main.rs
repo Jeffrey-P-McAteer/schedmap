@@ -28,8 +28,9 @@ const USAGE: &'static str = r#"
 The swiss army knife of all scheduling.
 
 Usage:
-  schedmap <config_file>
-  schedmap --server [<config_file>] [--app-port=<port>] [--websocket-port=<port>]
+  schedmap <config-file>
+  schedmap --client <client-event>
+  schedmap --server [<config-file>] [--app-port=<port>] [--websocket-port=<port>]
   schedmap (-h | --help)
   schedmap --version
 
@@ -44,6 +45,9 @@ Options:
 struct Args {
     arg_config_file: Option<String>,
     
+    flag_client: bool,
+    arg_client_event: Option<String>,
+    
     flag_server: bool,
     flag_app_port: u16,
     flag_websocket_port: u16,
@@ -57,6 +61,13 @@ fn main() {
                       .unwrap_or_else(|e| e.exit());
   if args.flag_version {
     println!("schedmap version {}", VERSION);
+    return;
+  }
+  
+  println!("{:#?}", args);
+  
+  if args.flag_client {
+    do_client_websocket(args);
     return;
   }
   
@@ -76,6 +87,16 @@ fn main() {
     }
   }
   
+}
+
+fn do_client_websocket(args: Args) {
+  let event_str = args.arg_client_event.unwrap_or("ERR".to_string());
+  ws::connect(format!("ws://127.0.0.1:{}", args.flag_websocket_port), |out| {
+      out.send(event_str.as_str()).unwrap();
+      move |_msg| {
+        out.close(ws::CloseCode::Normal)
+      }
+  }).unwrap();
 }
 
 fn run_server(args: Args) {
