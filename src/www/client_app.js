@@ -31,8 +31,7 @@ function change_map_svg_elm_color(elm_id, color) {
   svg_elm.style.fill = color;
 }
 
-window.addEventListener("load", function() {
-  // Spawn websocket handler
+function setup_websocket() {
   var web_socket = new WebSocket("ws://" + location.hostname + ":"+window.websocket_port + "/");
   
   web_socket.onopen = function (evt) {
@@ -42,6 +41,18 @@ window.addEventListener("load", function() {
   web_socket.onmessage = function (evt) {
     console.log("web_socket got: "+evt.data);
     change_map_svg_elm_color("Lobby", evt.data);
+  };
+  
+  web_socket.onclose = function (evt) {
+    console.log("Websocket closed, reconnecting in 5s...");
+    setTimeout(setup_websocket, 5 * 1000);
+  };
+}
+
+window.addEventListener("load", function() {
+  if (window.location.pathname.includes("/app_home.html")) {
+    // Spawn websocket handler
+    setup_websocket();
   }
   
 });
