@@ -33,7 +33,7 @@ function change_map_svg_elm_color(elm_id, color) {
 
 window.addEventListener("load", function() {
   // Spawn websocket handler
-  var web_socket = new WebSocket("ws://" + location.hostname + ":8001" + "/");
+  var web_socket = new WebSocket("ws://" + location.hostname + ":"+window.websocket_port + "/");
   
   web_socket.onopen = function (evt) {
     web_socket.send("Hello from a browser!");

@@ -28,9 +28,8 @@ const USAGE: &'static str = r#"
 The swiss army knife of all scheduling.
 
 Usage:
-  schedmap <config-file>
-  schedmap --client <client-event>
-  schedmap --server [<config-file>] [--app-port=<port>] [--websocket-port=<port>]
+  schedmap client <client-event>
+  schedmap server [<config-file>] [--app-port=<port>] [--websocket-port=<port>]
   schedmap (-h | --help)
   schedmap --version
 
@@ -45,33 +44,40 @@ Options:
 struct Args {
     arg_config_file: Option<String>,
     
-    flag_client: bool,
+    cmd_client: bool,
     arg_client_event: Option<String>,
     
-    flag_server: bool,
+    cmd_server: bool,
     flag_app_port: u16,
     flag_websocket_port: u16,
     
     flag_version: bool,
 }
 
+static mut main_args: Option<Args> = None;
+
 fn main() {
   let args: Args = Docopt::new(USAGE)
                       .and_then(|d| d.deserialize())
                       .unwrap_or_else(|e| e.exit());
+  
+  unsafe {
+    main_args = Some(args.clone());
+  }
+  
   if args.flag_version {
     println!("schedmap version {}", VERSION);
     return;
   }
   
-  println!("{:#?}", args);
+  //println!("{:#?}", args);
   
-  if args.flag_client {
+  if args.cmd_client {
     do_client_websocket(args);
     return;
   }
   
-  if args.flag_server {
+  if args.cmd_server {
     run_server(args);
     return;
   }
@@ -93,7 +99,8 @@ fn do_client_websocket(args: Args) {
   let event_str = args.arg_client_event.unwrap_or("ERR".to_string());
   ws::connect(format!("ws://127.0.0.1:{}", args.flag_websocket_port), |out| {
       out.send(event_str.as_str()).unwrap();
-      move |_msg| {
+      move |msg| {
+        println!("{}", msg);
         out.close(ws::CloseCode::Normal)
       }
   }).unwrap();
@@ -153,6 +160,8 @@ fn run_server(args: Args) {
         routes::app_home_map,
       
       routes::app_locations,
+      
+      routes::appvariables_js,
       
     ]).launch();
     

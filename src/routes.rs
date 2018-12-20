@@ -24,6 +24,22 @@ pub fn app_js() -> JavaScript<&'static str> {
   JavaScript(include_str!("www/client_app.js"))
 }
 
+#[get("/appvariables.js")]
+pub fn appvariables_js(gcs_bundle: GCSBundle) -> JavaScript<String> {
+  match gcs_bundle.ptr.lock() {
+    Ok(mut gcs) => {
+      let _x = gcs.get_data_dir();
+      let websocket_port = unsafe { crate::main_args.clone() }.unwrap().flag_websocket_port;
+      return JavaScript(format!(r#"
+window.websocket_port = {};
+"#, websocket_port) );
+    },
+    Err(e) => {
+      return JavaScript(format!("console.log('{:?}');", e));
+    }
+  }
+}
+
 #[get("/style.css")]
 pub fn style() -> Css<&'static str> {
   Css(include_str!("www/client_style.css"))
@@ -60,7 +76,7 @@ pub fn debug_toggle(gcs_bundle: GCSBundle, svg_id: &RawStr) -> Html<&'static str
 
 #[get("/app_home.html")]
 pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
-  Html("<script src=\"app.js\"></script><h1>Home Home Home</h1><object id=\"map\" type=\"image/svg+xml\" data=\"app_home/map.svg\"></object><button onclick='do_lobby();'>Do Lobby</button>")
+  Html("<script src=\"appvariables.js\"></script><script src=\"app.js\"></script><h1>Home Home Home</h1><object id=\"map\" type=\"image/svg+xml\" data=\"app_home/map.svg\"></object><button onclick='do_lobby();'>Do Lobby</button>")
 }
 
 #[get("/app_home/map.svg")]
