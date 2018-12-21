@@ -54,7 +54,7 @@ struct Args {
     flag_version: bool,
 }
 
-static mut main_args: Option<Args> = None;
+static mut MAIN_ARGS: Option<Args> = None;
 
 fn main() {
   let args: Args = Docopt::new(USAGE)
@@ -62,7 +62,7 @@ fn main() {
                       .unwrap_or_else(|e| e.exit());
   
   unsafe {
-    main_args = Some(args.clone());
+    MAIN_ARGS = Some(args.clone());
   }
   
   if args.flag_version {
@@ -160,6 +160,8 @@ fn run_server(args: Args) {
         routes::app_home_map,
       
       routes::app_locations,
+      
+      routes::app_badge_input,
       
       routes::appvariables_js,
       

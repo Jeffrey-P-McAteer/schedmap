@@ -29,7 +29,7 @@ pub fn appvariables_js(gcs_bundle: GCSBundle) -> JavaScript<String> {
   match gcs_bundle.ptr.lock() {
     Ok(mut gcs) => {
       let _x = gcs.get_data_dir();
-      let websocket_port = unsafe { crate::main_args.clone() }.unwrap().flag_websocket_port;
+      let websocket_port = unsafe { crate::MAIN_ARGS.clone() }.unwrap().flag_websocket_port;
       return JavaScript(format!(r#"
 window.websocket_port = {};
 "#, websocket_port) );
@@ -87,6 +87,17 @@ pub fn app_home_map(_gcs_bundle: GCSBundle) -> Content<String> {
 #[get("/app_locations.html")]
 pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<&'static str> {
   Html("<center>Locations</center>")
+}
+
+#[get("/app_badge_input.html")]
+pub fn app_badge_input(_gcs_bundle: GCSBundle) -> Html<&'static str> {
+  Html(r#"
+<script src="appvariables.js"></script><script src="app.js"></script>
+<div style="position: relative; top:0; right:0; left:0; width:450px; margin:auto; padding:5px; background-color: #e0e0e0;">
+<h3>Badge ID Input</h3>
+<input id="badge_id_input" type="text">
+</div>
+"#)
 }
 
 
