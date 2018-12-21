@@ -11,7 +11,7 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
   }
   
   if data_str.contains("read-id:") {
-    let split_idx = data_str.find(":").expect("No ':' in data_str when expected");
+    let split_idx = data_str.find(":").expect("No ':' in data_str when expected") + 1;
     // data_str is modified and contains first half
     let id = data_str.split_off(split_idx);
     

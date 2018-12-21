@@ -18,17 +18,20 @@ function constantly_re_focus_badge_id_input() {
   id_in_elm.onchange = function() {
     var now_ms = Date.now();
     var delta_ms = now_ms - window.last_id_in_change_ms;
-    window.last_id_in_change_ms = now_ms;
     
     if (delta_ms < 2000) {
       // Change happened very soon, wait until input complete, check every quarter second
-      window.id_in_timer = setTimeout(id_in_elm.onchange, 250);
+      window.id_in_timer = setInterval(id_in_elm.onchange, 250);
       
     }
-    else {
+    else if (id_in_elm.value.length > 0) {
       // Change was 2 seconds ago, assume input is finished being typed in
+      window.last_id_in_change_ms = now_ms;
+      clearInterval(window.id_in_timer);
+      
       var value = id_in_elm.value;
       window.app_web_socket.send("read-id:"+value);
+      
     }
   };
   

@@ -153,6 +153,8 @@ fn run_server(args: Args) {
       routes::index,
       routes::style,
       routes::app_js,
+      routes::instascan_min_js,
+      
       routes::debug,
         routes::debug_toggle,
       
