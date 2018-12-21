@@ -23,7 +23,7 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
     out.send(r#"
 document.getElementById('badge_id_input').value = '';
 document.body.style.background = 'green';
-setTimeout(function() { document.body.style.background = ''; }, 3 * 1000);
+setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
 "#).expect("Could not send to browser");
     
     
