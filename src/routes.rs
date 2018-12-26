@@ -1,7 +1,9 @@
 
 use rocket::response::content::{Html,Css,JavaScript,Content};
 use rocket::http::{ContentType,RawStr};
-use rocket::Data;
+//use rocket::Data;
+use rocket::request::FromRequest;
+use rocket::*;
 
 // "crate::" means us
 use crate::state::*;
@@ -123,21 +125,60 @@ pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<&'static str> {
 <script type="text/javascript" src="instascan.min.js"></script>
 <script src="appvariables.js">
 </script><script src="app.js"></script>
-<form action="upload_map" method="POST">
+<form action="upload_map" method="POST" enctype="multipart/form-data">
 <input type="file" id="data" name="data" accept="image/svg+xml">
 <input type="submit" value="Change Map">
 </form>
 "#)
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub enum MultiPartBoundry {
+  Value(String),
+  Unk
+}
+
+impl MultiPartBoundry {
+  pub fn to_string(self) -> String {
+    match self {
+      MultiPartBoundry::Value(value) => {
+        format!("{}", value)
+      }
+      MultiPartBoundry::Unk => {
+        format!("")
+      }
+    }
+  }
+}
+
+impl<'r, 'a> FromRequest<'r, 'a> for MultiPartBoundry {
+  type Error = ();
+
+  fn from_request(request: &'r Request<'a>) -> request::Outcome<MultiPartBoundry, ()> {
+    let keys = request.headers().get("Content-Type").collect::<Vec<_>>();
+    if keys.len() < 1 {
+      return Outcome::Success(MultiPartBoundry::Unk);
+    }
+
+    let vec = keys[0].split("boundary=").collect::<Vec<&str>>();
+    if vec.len() > 1 {
+      return Outcome::Success(
+        MultiPartBoundry::Value(vec[1].to_string())
+      );
+    }
+
+    return Outcome::Success(MultiPartBoundry::Unk);
+  }
+}
+
 #[post("/upload_map", data = "<data>")]
-pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data) -> Html<&'static str> {
+pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data, multip_boundry: MultiPartBoundry) -> Html<&'static str> {
   match gcs_bundle.ptr.lock() {
     Ok(mut gcs) => {
       //let mut data_buffer: Vec<u8> = vec![];
       //data.stream_to(&mut data_buffer).expect("Failed to write SVG to memory buffer");
       
-      let mut mp = multipart::server::Multipart::with_body(data.open(), "");
+      let mut mp = multipart::server::Multipart::with_body(data.open(), multip_boundry.to_string() );
       let mut entries = mp.save().temp().into_entries().expect("Could not unwrap into_entries");
       println!("{:?}", entries);
       println!("entries.fields_count() = {}", entries.fields_count());
