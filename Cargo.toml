@@ -23,4 +23,7 @@ directories = "1.0"
 # Used by websocket threads to receive data updates broadcast to all browser clients
 bus = "2.0.1"
 
+# Used to get uploaded files
+multipart = "*"
+
 

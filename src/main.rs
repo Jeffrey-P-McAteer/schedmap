@@ -3,6 +3,8 @@
 #[macro_use] extern crate rocket;
 use rocket::config::{Config, Environment};
 
+extern crate multipart;
+
 extern crate ws;
 
 #[macro_use] extern crate serde_derive;
@@ -162,6 +164,7 @@ fn run_server(args: Args) {
         routes::app_home_map,
       
       routes::app_locations,
+        routes::app_upload_map,
       
       routes::app_badge_input,
       

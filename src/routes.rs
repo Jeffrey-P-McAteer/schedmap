@@ -1,6 +1,7 @@
 
 use rocket::response::content::{Html,Css,JavaScript,Content};
 use rocket::http::{ContentType,RawStr};
+use rocket::Data;
 
 // "crate::" means us
 use crate::state::*;
@@ -81,49 +82,77 @@ pub fn debug_toggle(gcs_bundle: GCSBundle, svg_id: &RawStr) -> Html<&'static str
 
 #[get("/app_home.html")]
 pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
-  Html("<script src=\"appvariables.js\"></script><script src=\"app.js\"></script><h1>Home Home Home</h1><object id=\"map\" type=\"image/svg+xml\" data=\"app_home/map.svg\"></object><button onclick='do_lobby();'>Do Lobby</button>")
+  Html(r#"
+<script src="appvariables.js"></script>
+<script src="app.js"></script>
+<h1>Home Home Home</h1>
+<object id="map" type="image/svg+xml" data="app_home/map.svg"></object>
+<button onclick='do_lobby();'>Do Lobby</button>
+"#)
 }
 
 #[get("/app_home/map.svg")]
-pub fn app_home_map(_gcs_bundle: GCSBundle) -> Content<String> {
-  Content(ContentType::new("image", "svg+xml"), include_str!("../test-assets/map.svg").to_string())
+pub fn app_home_map(gcs_bundle: GCSBundle) -> Content<String> {
+  match gcs_bundle.ptr.lock() {
+    Ok(gcs) => {
+      match &gcs.svg_map {
+        Some(map_str) => {
+          return Content(ContentType::new("image", "svg+xml"), map_str.to_string().clone());
+        }
+        None => {
+          // Will fall through to last return
+        }
+      }
+    },
+    Err(e) => {
+      println!("{}", e);
+    }
+  }
+  // Default in case of error or empty SVG
+  return Content(ContentType::new("image", "svg+xml"), "<!-- We got nuthin sorry -->".to_string())
+}
+
+#[get("/app_badge_input.html")]
+pub fn app_badge_input(_gcs_bundle: GCSBundle) -> Html<String> {
+  Html(include_str!("www/app_badge_input.html").to_string())
 }
 
 #[get("/app_locations.html")]
 pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<&'static str> {
-  Html("<center>Locations</center>")
-}
-
-#[get("/app_badge_input.html")]
-pub fn app_badge_input(_gcs_bundle: GCSBundle) -> Html<&'static str> {
   Html(r#"
 <script type="text/javascript" src="instascan.min.js"></script>
 <script src="appvariables.js">
 </script><script src="app.js"></script>
-<div style="position: relative; top:0; right:0; left:0; width:450px; margin:auto; padding:5px; background-color: #e0e0e0;">
-<h3>Badge ID Input</h3>
-<input id="badge_id_input" type="text">
-<br><br>
-<video id="preview" style="width:100%;"></video>
-<script type="text/javascript">
-  let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-  scanner.addListener('scan', function (content) {
-    document.getElementById('badge_id_input').value = content;
-    // Call the onchange event with a delay so the value can be flashed on the screen
-    setTimeout(document.getElementById('badge_id_input').onchange, 750);
-  });
-  Instascan.Camera.getCameras().then(function (cameras) {
-    if (cameras.length > 0) {
-      scanner.start(cameras[0]);
-    } else {
-      console.error('No cameras found.');
-    }
-  }).catch(function (e) {
-    console.error(e);
-  });
-</script>
+<form action="upload_map" method="POST">
+<input type="file" id="data" name="data" accept="image/svg+xml">
+<input type="submit" value="Change Map">
+</form>
+"#)
+}
 
-</div>
+#[post("/upload_map", data = "<data>")]
+pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data) -> Html<&'static str> {
+  match gcs_bundle.ptr.lock() {
+    Ok(mut gcs) => {
+      //let mut data_buffer: Vec<u8> = vec![];
+      //data.stream_to(&mut data_buffer).expect("Failed to write SVG to memory buffer");
+      
+      let mut mp = multipart::server::Multipart::with_body(data.open(), "");
+      let mut entries = mp.save().temp().into_entries().expect("Could not unwrap into_entries");
+      println!("{:?}", entries);
+      println!("entries.fields_count() = {}", entries.fields_count());
+      println!("entries.recount_fields() = {}", entries.recount_fields());
+      
+      //let svg_as_string = String::from_utf8(data_buffer).unwrap_or("Some Error, IDK. We didn't crash I guess.".to_string());
+      //gcs.svg_map = Some(svg_as_string);
+      
+    },
+    Err(e) => {
+      println!("{}", e);
+    }
+  }
+  Html(r#"
+<p>Thanks!</p>
 "#)
 }
 

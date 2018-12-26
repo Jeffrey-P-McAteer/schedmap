@@ -30,6 +30,8 @@ pub struct GCS { // Global Context Singleton
   pub num_visitors: u8,
   data_dir: Option<String>,
   pub broadcast_to_browsers: BusWrapper,
+  pub svg_map: Option<String>,
+  
 }
 
 impl GCS {
@@ -71,7 +73,10 @@ impl GCSBundle {
         data_dir: None,
         broadcast_to_browsers: BusWrapper {
           bus: Bus::new(12),
-        }
+        },
+        svg_map: None,
+        
+        
       })),
     };
   }
