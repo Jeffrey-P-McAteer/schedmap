@@ -8,6 +8,8 @@ use rocket::*;
 // "crate::" means us
 use crate::state::*;
 
+use std::io::Read;
+
 #[get("/")]
 pub fn index(gcs_bundle: GCSBundle) -> Html<&'static str> {
   match gcs_bundle.ptr.lock() {
@@ -179,13 +181,16 @@ pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data, multip_boundry: MultiPa
       //data.stream_to(&mut data_buffer).expect("Failed to write SVG to memory buffer");
       
       let mut mp = multipart::server::Multipart::with_body(data.open(), multip_boundry.to_string() );
-      let mut entries = mp.save().temp().into_entries().expect("Could not unwrap into_entries");
-      println!("{:?}", entries);
-      println!("entries.fields_count() = {}", entries.fields_count());
-      println!("entries.recount_fields() = {}", entries.recount_fields());
+      let entries = mp.save().temp().into_entries().expect("Could not unwrap into_entries");
+      //println!("{:#?}", entries);
       
-      //let svg_as_string = String::from_utf8(data_buffer).unwrap_or("Some Error, IDK. We didn't crash I guess.".to_string());
-      //gcs.svg_map = Some(svg_as_string);
+      let svg_map_contents = &entries.fields.get(&"data".to_string()).unwrap()[0].data;
+      let mut svg_reader = svg_map_contents.readable().unwrap();
+      
+      let mut new_svg_map_str: String = String::new();
+      svg_reader.read_to_string(&mut new_svg_map_str).unwrap();
+      
+      gcs.svg_map = Some(new_svg_map_str);
       
     },
     Err(e) => {
