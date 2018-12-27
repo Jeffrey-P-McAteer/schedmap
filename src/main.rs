@@ -31,20 +31,21 @@ The swiss army knife of all scheduling.
 
 Usage:
   schedmap client <client-event>
-  schedmap server [<config-file>] [--app-port=<port>] [--websocket-port=<port>]
+  schedmap server [--config-dir=<config-dir>] [--app-port=<port>] [--websocket-port=<port>]
   schedmap (-h | --help)
   schedmap --version
 
 Options:
-  -h --help                Show this screen.
-  --app-port=<port>        Port for web UI [default: 8000].
-  --websocket-port=<port>  Port for websocket streams [default: 8001].
-  --version                Show version.
+  -h --help                  Show this screen.
+  --config-dir=<config-dir>  Persistent config dir for app data [default: '/tmp/.schedmap-persist'].
+  --app-port=<port>          Port for web UI [default: 8000].
+  --websocket-port=<port>    Port for websocket streams [default: 8001].
+  --version                  Show version.
 "#;
 
 #[derive(Debug, Deserialize, Clone)]
 struct Args {
-    arg_config_file: Option<String>,
+    flag_config_dir: String,
     
     cmd_client: bool,
     arg_client_event: Option<String>,
@@ -82,17 +83,6 @@ fn main() {
   if args.cmd_server {
     run_server(args);
     return;
-  }
-  
-  match args.arg_config_file {
-    Some(arg_config_file) => {
-      println!("Reading business config from file {}...", arg_config_file);
-      // Meh todo what will this become?
-    }
-    None => {
-      println!("{}", USAGE);
-      return;
-    }
   }
   
 }

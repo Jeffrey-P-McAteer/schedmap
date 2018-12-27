@@ -67,15 +67,39 @@ pub struct GCSBundle {
 
 impl GCSBundle {
   pub fn new() -> GCSBundle {
+    let data_dir = unsafe{crate::MAIN_ARGS.clone()}.unwrap().flag_config_dir;
+    let svg_map = match fs::read_to_string(format!("{}/svg_map.svg", data_dir)) {
+      Ok(svg_contents) => svg_contents,
+      Err(e) => {
+        println!("{}", e);
+        format!(r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="200mm"
+   height="100mm"
+   viewBox="0 0 200 100"
+   version="1.1"
+   sodipodi:docname="map.svg">
+  <text x="5" y="20" fill="black" font-size="12">No map, see the 'Locations' tab to upload a map.</text>
+</svg>
+"#)
+      }
+    };
+    
     return GCSBundle {
       ptr: Arc::new(Mutex::new(GCS {
         num_visitors: 0,
-        data_dir: None,
+        data_dir: Some(data_dir),
         broadcast_to_browsers: BusWrapper {
           bus: Bus::new(12),
         },
-        svg_map: None,
-        
+        svg_map: Some(svg_map),
         
       })),
     };
