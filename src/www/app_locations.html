@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <script type="text/javascript" src="instascan.min.js"></script>
+    <script src="appvariables.js">
+    </script><script src="app.js"></script>
+  </head>
+  <body>
+    <form action="upload_map" method="POST" enctype="multipart/form-data">
+      <p>
+        This form is used to change the displayed map.
+      </p>
+      <input type="file" id="data" name="data" accept="image/svg+xml">
+      <input type="submit" value="Change Map">
+    </form>
+    <a href="app_home/map.svg">Download current map</a>
+  </body>
+</html>

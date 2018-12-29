@@ -90,9 +90,7 @@ pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
   Html(r#"
 <script src="appvariables.js"></script>
 <script src="app.js"></script>
-<h1>Home Home Home</h1>
 <object id="map" type="image/svg+xml" data="app_home/map.svg"></object>
-<button onclick='do_lobby();'>Do Lobby</button>
 "#)
 }
 
@@ -114,7 +112,7 @@ pub fn app_home_map(gcs_bundle: GCSBundle) -> Content<String> {
     }
   }
   // Default in case of error or empty SVG
-  return Content(ContentType::new("image", "svg+xml"), "<!-- We got nuthin sorry -->".to_string())
+  return Content(ContentType::new("image", "svg+xml"), "<!-- Error no map! -->".to_string())
 }
 
 #[get("/app_badge_input.html")]
@@ -123,16 +121,8 @@ pub fn app_badge_input(_gcs_bundle: GCSBundle) -> Html<String> {
 }
 
 #[get("/app_locations.html")]
-pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<&'static str> {
-  Html(r#"
-<script type="text/javascript" src="instascan.min.js"></script>
-<script src="appvariables.js">
-</script><script src="app.js"></script>
-<form action="upload_map" method="POST" enctype="multipart/form-data">
-<input type="file" id="data" name="data" accept="image/svg+xml">
-<input type="submit" value="Change Map">
-</form>
-"#)
+pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<String> {
+  Html(include_str!("www/app_locations.html").to_string())
 }
 
 #[post("/upload_map", data = "<data>")]

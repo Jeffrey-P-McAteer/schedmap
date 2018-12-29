@@ -3,25 +3,31 @@
 </script><script src="app.js"></script>
 <div style="position: relative; top:0; right:0; left:0; width:450px; margin:auto; padding:5px; background-color: #e0e0e0;">
 <h3>Badge ID Input</h3>
-<input id="badge_id_input" type="text">
+<p>
+  If a NFC reader is attached, tap your NFC card. <br>
+  You may also manually type in an employee ID, which will be submitted after 2 seconds of inactivity.
+</p>
+<input id="badge_id_input" type="text" style="width:100%;">
 <br><br>
 <video id="preview" style="width:100%;"></video>
 <script type="text/javascript">
-  let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-  scanner.addListener('scan', function (content) {
-    document.getElementById('badge_id_input').value = content;
-    // Call the onchange event with a delay so the value can be flashed on the screen
-    setTimeout(document.getElementById('badge_id_input').onchange, 750);
-  });
-  Instascan.Camera.getCameras().then(function (cameras) {
-    if (cameras.length > 0) {
-      scanner.start(cameras[0]);
-    } else {
-      console.error('No cameras found.');
-    }
-  }).catch(function (e) {
-    console.error(e);
-  });
+  setTimeout(function() {
+    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+    scanner.addListener('scan', function (content) {
+      document.getElementById('badge_id_input').value = content;
+      // Call the onchange event with a delay so the value can be flashed on the screen
+      setTimeout(document.getElementById('badge_id_input').onchange, 750);
+    });
+    Instascan.Camera.getCameras().then(function (cameras) {
+      if (cameras.length > 0) {
+        scanner.start(cameras[0]);
+      } else {
+        console.error('No cameras found.');
+      }
+    }).catch(function (e) {
+      console.error(e);
+    });
+  }, 800);
 </script>
 
 </div>

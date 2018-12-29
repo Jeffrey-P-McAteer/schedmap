@@ -1,6 +1,9 @@
 
 /* Mostly copy-paste from a blog post on vanilla JS tabs. There's never a "nice" or "elegant" html tab implementation. */
 function tabs(x) {
+  if (x == null) {
+    return;
+  }
   var lis=document.getElementById("tabList").childNodes; //gets all the LI from the UL
   for(var i=0; i<lis.length; i++) {
     var lis_links = lis[i].childNodes;
@@ -71,6 +74,7 @@ window.addEventListener("load", function() {
   if (window.location.pathname.includes("/app_home.html")) {
     // Spawn websocket handler
     setup_websocket();
+    
   }
   else if (window.location.pathname.includes("/app_badge_input.html")) {
     setup_websocket();
