@@ -69,12 +69,12 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
   }
 }
 
-#[get("/debug/toggle/<svg_id>")]
-pub fn debug_toggle(gcs_bundle: GCSBundle, svg_id: &RawStr) -> Html<&'static str> {
+#[get("/debug/bcast/<svg_id>")]
+pub fn debug_toggle(gcs_bundle: GCSBundle, js_code: &RawStr) -> Html<&'static str> {
   match gcs_bundle.ptr.lock() {
     Ok(mut gcs) => {
       // Send a message to everyone listening
-      gcs.broadcast_to_browsers.bus.broadcast(svg_id.to_string());
+      gcs.broadcast_to_browsers.bus.broadcast(js_code.to_string());
     },
     Err(e) => {
       println!("{}", e);
