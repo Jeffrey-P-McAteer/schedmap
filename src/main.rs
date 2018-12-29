@@ -19,6 +19,8 @@ use std::thread;
 
 // Holds HTTP route functions responsible for passing data into and out of client apps
 mod routes;
+mod routes_types; // Aux. logic directly for use in routes
+
 // Holds shared state data; responsible for locking references
 // and ensuring state is straightforward to change from `routes`
 mod state;
