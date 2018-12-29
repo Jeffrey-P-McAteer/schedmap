@@ -69,7 +69,7 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
   }
 }
 
-#[get("/debug/bcast/<svg_id>")]
+#[get("/debug/bcast/<js_code>")]
 pub fn debug_toggle(gcs_bundle: GCSBundle, js_code: &RawStr) -> Html<&'static str> {
   match gcs_bundle.ptr.lock() {
     Ok(mut gcs) => {
