@@ -31,7 +31,7 @@ pub struct GCS { // Global Context Singleton
   data_dir: Option<String>,
   pub broadcast_to_browsers: BusWrapper,
   pub svg_map: Option<String>,
-  
+  pub num_connected_machines: u16,
 }
 
 impl GCS {
@@ -100,10 +100,24 @@ impl GCSBundle {
           bus: Bus::new(12),
         },
         svg_map: Some(svg_map),
+        num_connected_machines: 0,
         
       })),
     };
   }
+  
+  pub fn change_connected_machines(&self, delta: isize) {
+    match self.ptr.lock() {
+      Ok(mut gcs) => {
+        gcs.num_connected_machines = ((gcs.num_connected_machines as isize) + delta) as u16;
+      }
+      Err(e) => {
+        println!("{}", e);
+      }
+    }
+  }
+  
+  
 }
 
 lazy_static! {

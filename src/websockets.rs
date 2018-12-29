@@ -7,6 +7,7 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
   let mut data_str: String = format!("{}", data);
   
   if data_str == "browser-has-connected" {
+    global_context_singleton.change_connected_machines(1);
     return Ok(());
   }
   
