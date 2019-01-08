@@ -17,7 +17,13 @@ function tabs(x) {
 function constantly_re_focus_badge_id_input() {
   // Listen on change
   window.last_id_in_change_ms = Date.now();
+  
+  var location_in_elm = document.getElementById('location_input');
   var id_in_elm = document.getElementById('badge_id_input');
+  
+  // Restore remembered data
+  location_in_elm.value = window.localStorage.getItem("location") || "";
+  
   id_in_elm.onchange = function() {
     var now_ms = Date.now();
     var delta_ms = now_ms - window.last_id_in_change_ms;
@@ -32,8 +38,12 @@ function constantly_re_focus_badge_id_input() {
       window.last_id_in_change_ms = now_ms;
       clearInterval(window.id_in_timer);
       
+      var location = location_in_elm.value;
       var value = id_in_elm.value;
-      window.app_web_socket.send("read-id:"+value);
+      window.app_web_socket.send("read-id:"+value+":"+location);
+      
+      // Save location for next time 
+      window.localStorage.setItem("location", location);
       
     }
   };
@@ -41,6 +51,9 @@ function constantly_re_focus_badge_id_input() {
   
   // re-focus every 2s
   setInterval(function() {
+    if (document.activeElement === location_in_elm) {
+      return;
+    }
     id_in_elm.focus();
   }, 2000);
 }

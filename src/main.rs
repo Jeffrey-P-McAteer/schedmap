@@ -171,7 +171,6 @@ fn run_server(args: Args) {
       routes::instascan_min_js,
       
       routes::debug,
-        routes::debug_toggle,
       
       routes::app_home,
         routes::app_home_map,

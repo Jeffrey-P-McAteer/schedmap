@@ -18,10 +18,15 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
   if data_str.contains("read-id:") {
     let split_idx = data_str.find(":").expect("No ':' in data_str when expected") + 1;
     // data_str is modified and contains first half
-    let id = data_str.split_off(split_idx);
+    let mut id = data_str.split_off(split_idx); // will contain "id:location" at first
+    
+    let location_split_idx = id.find(":").expect("No ':' in data_str when expected") + 1;
+    let location = id.split_off(location_split_idx);
+    
+    id.truncate(id.len()-1); // remove a trailing ':' character from id
     
     // TODO lookup ID, determine and transmit location change.
-    println!("Someone with ID {} just badged in!", id);
+    println!("Someone with ID {} just badged in at {}", id, location);
     
     // tell client to clear their input field
     

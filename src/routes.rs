@@ -81,22 +81,6 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
   }
 }
 
-// Likely going away in favor of adding a --broadcast flag to the 'client' mode.
-#[get("/debug/bcast/<js_code>")]
-pub fn debug_toggle(gcs_bundle: GCSBundle, js_code: &RawStr) -> Html<&'static str> {
-  match gcs_bundle.ptr.lock() {
-    Ok(mut gcs) => {
-      // Send a message to everyone listening
-      gcs.broadcast_to_browsers.bus.broadcast(js_code.to_string());
-    },
-    Err(e) => {
-      println!("{}", e);
-    }
-  }
-  Html("Done")
-}
-
-
 
 #[get("/app_home.html")]
 pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
