@@ -1,4 +1,9 @@
 
+/*
+ * This module is used to write implementations for our own data structures
+ * to make them integrate well with 3rd-party libraries.
+ */
+
 use rocket::response::content::{Html,Css,JavaScript,Content};
 use rocket::http::{ContentType,RawStr};
 //use rocket::Data;

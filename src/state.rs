@@ -1,4 +1,12 @@
 
+/*
+ * This module is responsible for storing and making available a global
+ * singleton full of ephemeral system state data.
+ * If any of this data needs to be persisted it should be a new config option
+ * that is written to global_context_singleton on startup.
+ * 
+ */
+
 use rocket::*;
 use rocket::request;
 use rocket::request::FromRequest;

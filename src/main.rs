@@ -1,3 +1,8 @@
+/*
+ * Imports for the entire crate,
+ * versions are specified in Cargo.toml
+ */
+
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
@@ -45,6 +50,9 @@ Options:
   --version                  Show version.
 "#;
 
+/*
+ * The above string is parsed by Docopt and values are put into this Args structure
+ */
 #[derive(Debug, Deserialize, Clone)]
 struct Args {
     flag_config_dir: String,
@@ -66,6 +74,9 @@ fn main() {
                       .and_then(|d| d.deserialize())
                       .unwrap_or_else(|e| e.exit());
   
+  // This is unsafe because we are mutating a global variable,
+  // but we know it will be a safe operation because there are no other
+  // threads running and we are not reading any uninitialized data
   unsafe {
     MAIN_ARGS = Some(args.clone());
   }
@@ -89,6 +100,10 @@ fn main() {
   
 }
 
+/*
+ * Transmit a command via a new websocket similar to a browser sending us an event.
+ * Primarially used to test capabilities.
+ */
 fn do_client_websocket(args: Args) {
   let event_str = args.arg_client_event.unwrap_or("ERR".to_string());
   ws::connect(format!("ws://127.0.0.1:{}", args.flag_websocket_port), |out| {
@@ -100,7 +115,11 @@ fn do_client_websocket(args: Args) {
   }).unwrap();
 }
 
+/*
+ * We spawn 2 threads: one to handle incoming websockets and one to handle incoming HTTP traffic.
+ */
 fn run_server(args: Args) {
+  
   let ws_args = args.clone();
   let websocket_handle = thread::spawn(move || {
     ws::listen(format!("0.0.0.0:{}", ws_args.flag_websocket_port), |out| {
@@ -134,6 +153,8 @@ fn run_server(args: Args) {
       }
     }).expect("Error on websocket server");
   });
+  
+  
   let web_args = args.clone();
   let webserver_handle = thread::spawn(move || {
     let config = Config::build(Environment::Staging)

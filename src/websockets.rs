@@ -1,8 +1,12 @@
 
+/*
+ * This module is responsible for handling individual websocket connections,
+ * and has a similar role to the 'routes' module but for websockets.
+ */
+
 use ws;
 use crate::state::global_context_singleton;
 
-// If return is Some("data") we transmit it back to the browser in main.rs
 pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Error> {
   let mut data_str: String = format!("{}", data);
   

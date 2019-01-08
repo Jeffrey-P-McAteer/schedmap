@@ -16,6 +16,11 @@ Arguments may be added like `cargo run server --app-port=4321`
 SchedMap also has a client component; the `src/www/` directory holds the largest pieces of the web app used to display scheduling state information to a browser.
 The browser capabilities can also be done via CLI by calling `schedmap client [other arguments]`, but this is still incomplete.
 
+# Directory layout
+
+Server code is in `src/`, browser client app code is mostly in `src/www`, but just because a file is under `www/` does not mean it will be served, a route must be added in `src/routes.rs` which serves the resource.
+
+`test-assets` should be used to store example data used during testing new capabilities.
 
 # Plans
 

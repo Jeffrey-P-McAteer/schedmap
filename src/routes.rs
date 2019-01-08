@@ -1,4 +1,11 @@
 
+/*
+ * This module handles all our HTTP routes (the endpoints at "/index.html" etc.)
+ * Many of our static assets in src/www/ are simply included as strings at build time,
+ * using the  include_str!() macro, which takes the contents of a file
+ * and turns it into a "String" expression of type &'static str.
+ */
+
 use rocket::response::content::{Html,Css,JavaScript,Content};
 use rocket::http::{ContentType,RawStr};
 //use rocket::Data;
@@ -30,6 +37,9 @@ pub fn app_js() -> JavaScript<&'static str> {
   JavaScript(include_str!("www/client_app.js"))
 }
 
+/* This is used to tell the client about global application configuration variables,
+ * such as the websocket port.
+ */
 #[get("/appvariables.js")]
 pub fn appvariables_js(gcs_bundle: GCSBundle) -> JavaScript<String> {
   match gcs_bundle.ptr.lock() {
@@ -46,6 +56,7 @@ window.websocket_port = {};
   }
 }
 
+// 3rd-party library to capture QR codes via a webcam.
 #[get("/instascan.min.js")]
 pub fn instascan_min_js() -> JavaScript<&'static str> {
   JavaScript(include_str!("www/instascan.min.js"))
@@ -56,6 +67,7 @@ pub fn style() -> Css<&'static str> {
   Css(include_str!("www/client_style.css"))
 }
 
+// Dumps pretty-formatted global state data for the server
 #[get("/debug")]
 pub fn debug(gcs_bundle: GCSBundle) -> String {
   match gcs_bundle.ptr.lock() {
@@ -69,6 +81,7 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
   }
 }
 
+// Likely going away in favor of adding a --broadcast flag to the 'client' mode.
 #[get("/debug/bcast/<js_code>")]
 pub fn debug_toggle(gcs_bundle: GCSBundle, js_code: &RawStr) -> Html<&'static str> {
   match gcs_bundle.ptr.lock() {
