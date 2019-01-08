@@ -24,6 +24,10 @@ function constantly_re_focus_badge_id_input() {
   // Restore remembered data
   location_in_elm.value = window.localStorage.getItem("location") || "";
   
+  location_in_elm.onchange = function() {
+    window.localStorage.setItem("location", location_in_elm.value);
+  };
+  
   id_in_elm.onchange = function() {
     var now_ms = Date.now();
     var delta_ms = now_ms - window.last_id_in_change_ms;

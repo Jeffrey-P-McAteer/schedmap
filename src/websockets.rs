@@ -36,6 +36,16 @@ document.body.style.background = 'green';
 setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
 "#).expect("Could not send to browser");
     
+    // Tell all browsers to set map location to full
+    
+    match global_context_singleton.ptr.lock() {
+      Ok(mut gcs) => {
+        gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
+      },
+      Err(e) => {
+        println!("{}", e);
+      }
+    }
     
     return Ok(());
   }

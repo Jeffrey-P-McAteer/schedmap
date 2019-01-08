@@ -75,7 +75,7 @@ pub struct GCSBundle {
 
 impl GCSBundle {
   pub fn new() -> GCSBundle {
-    let data_dir = unsafe{crate::MAIN_ARGS.clone()}.unwrap().flag_config_dir;
+    let data_dir = unsafe{crate::MAIN_ARGS.clone()}.unwrap().flag_config_dir.unwrap_or("/tmp/".to_string());
     let svg_map = match fs::read_to_string(format!("{}/svg_map.svg", data_dir)) {
       Ok(svg_contents) => svg_contents,
       Err(e) => {

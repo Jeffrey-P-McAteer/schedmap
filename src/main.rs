@@ -44,7 +44,7 @@ Usage:
 
 Options:
   -h --help                  Show this screen.
-  --config-dir=<config-dir>  Persistent config dir for app data [default: '/tmp/.schedmap-persist'].
+  --config-dir=<config-dir>  Persistent config dir for app data.
   --app-port=<port>          Port for web UI [default: 8000].
   --websocket-port=<port>    Port for websocket streams [default: 8001].
   --version                  Show version.
@@ -55,7 +55,7 @@ Options:
  */
 #[derive(Debug, Deserialize, Clone)]
 struct Args {
-    flag_config_dir: String,
+    flag_config_dir: Option<String>,
     
     cmd_client: bool,
     arg_client_event: Option<String>,
@@ -83,6 +83,7 @@ fn main() {
   
   if args.flag_version {
     println!("schedmap version {}", VERSION);
+    println!("schedmap config_dir = {:?}", state::global_context_singleton.ptr.lock().unwrap().get_data_dir() );
     return;
   }
   
