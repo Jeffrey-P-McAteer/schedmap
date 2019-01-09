@@ -40,7 +40,7 @@ Usage:
   schedmap client <client-event>
   schedmap server [--config-dir=<config-dir>] [--app-port=<port>] [--websocket-port=<port>]
   schedmap (-h | --help)
-  schedmap --version
+  schedmap --version [--config-dir=<config-dir>] [--app-port=<port>] [--websocket-port=<port>]
 
 Options:
   -h --help                  Show this screen.

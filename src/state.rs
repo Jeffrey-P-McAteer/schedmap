@@ -45,7 +45,10 @@ pub struct GCS { // Global Context Singleton
 
 impl GCS {
   pub fn get_data_dir(&mut self) -> PathBuf {
-    match &self.data_dir {
+    return GCS::get_data_dir_static(&mut self.data_dir);
+  }
+  pub fn get_data_dir_static(mut data_dir: &mut Option<String>) -> PathBuf {
+    match data_dir {
       Some(data_dir) => {
         return PathBuf::from(&data_dir);
       }
@@ -57,14 +60,13 @@ impl GCS {
             // Make dirs
             fs::create_dir_all(copied_path_str.clone()).expect("Could not create data dir");
             
-            self.data_dir = Some(copied_path_str);
+            (*data_dir) = Some(copied_path_str);
           }
           None => {
             panic!("We have no idea where the user's home directory is, and cannot store any data.");
           }
         }
-        //self.data_dir = Some();
-        return self.get_data_dir();
+        return GCS::get_data_dir_static(&mut data_dir);
       }
     }
   }
@@ -76,7 +78,10 @@ pub struct GCSBundle {
 
 impl GCSBundle {
   pub fn new() -> GCSBundle {
-    let data_dir = unsafe{crate::MAIN_ARGS.clone()}.unwrap().flag_config_dir.unwrap_or("/tmp/".to_string());
+    let mut data_dir = unsafe{crate::MAIN_ARGS.clone()}.unwrap().flag_config_dir;
+    // data_dir may be null
+    let data_dir = GCS::get_data_dir_static(&mut data_dir).into_os_string().into_string().unwrap();
+    // Now it will either be specified or generated
     let svg_map = match fs::read_to_string(format!("{}/svg_map.svg", data_dir)) {
       Ok(svg_contents) => svg_contents,
       Err(e) => {
