@@ -6,7 +6,7 @@ import sys
 if sys.version_info[0] < 3:
   raise Exception("Script requires Python 3")
 
-import os, subprocess, configparser
+import os, subprocess, configparser, shutil
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -42,10 +42,24 @@ if __name__ == '__main__':
   subprocess.call(["ssh", "-i", ".deployment-id-rsa",
     user_at_host, "sudo", "chown", "-R", server_user, "/opt/"], stdout=sys.stdout, stderr=sys.stderr)
   
-  subprocess.call(["scp", "-i", ".deployment-id-rsa",
-    schedmap_bin, f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
-  subprocess.call(["scp", "-i", ".deployment-id-rsa",
-    "schedmap-deployed.service", f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
+  # If user has rsync, use it becuase it's pure unicorn puke
+  if shutil.which("rsync") != None:
+    subprocess.call(["rsync", "--progress", "-e", "ssh -i .deployment-id-rsa",
+      schedmap_bin, f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
+    subprocess.call(["rsync", "--progress", "-e", "ssh -i .deployment-id-rsa",
+      "schedmap-deployed.service", f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
+    
+  elif shutil.which("scp") != None:
+    # Better have SCP
+    subprocess.call(["scp", "-i", ".deployment-id-rsa",
+      schedmap_bin, f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
+    subprocess.call(["scp", "-i", ".deployment-id-rsa",
+      "schedmap-deployed.service", f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
+    
+  else:
+    # Unicorn puke cleanup aisle 6!
+    eprint("Cannot deploy, neither rsync nor scp is installed!")
+    sys.exit(1)
   
   subprocess.call(["ssh", "-i", ".deployment-id-rsa",
     user_at_host, "sudo", "cp", "/opt/schedmap-deployed.service", "/usr/lib/systemd/system/schedmap-deployed.service"], stdout=sys.stdout, stderr=sys.stderr)
