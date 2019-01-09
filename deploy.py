@@ -44,6 +44,7 @@ if __name__ == '__main__':
   
   # If user has rsync, use it becuase it's pure unicorn puke
   if shutil.which("rsync") != None:
+    print("Deploying with 'scp', note that 'rsync' is superior because it does delta transfers.")
     subprocess.call(["rsync", "--progress", "-e", "ssh -i .deployment-id-rsa",
       schedmap_bin, f"{user_at_host}:/opt/"], stdout=sys.stdout, stderr=sys.stderr)
     subprocess.call(["rsync", "--progress", "-e", "ssh -i .deployment-id-rsa",
