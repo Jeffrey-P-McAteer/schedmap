@@ -18,8 +18,8 @@ if __name__ == '__main__':
   
   # Setup some env variables to handle edge cases
   os.environ["HOST"] = str(socket.gethostname())
-  os.environ["GIT_HASH"] = str(socket.gethostname())
-  os.environ["COMPILE_DATE"] = str(subprocess.Popen(["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE).stdout.read())
+  os.environ["GIT_HASH"] = subprocess.Popen(["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE).stdout.read().decode('utf-8').strip()
+  os.environ["COMPILE_DATE"] = str(datetime.datetime.now())
   
   # Build local code
   returncode = subprocess.call(["cargo", "build", "--release", "--target=x86_64-unknown-linux-musl"], stdout=sys.stdout, stderr=sys.stderr)
