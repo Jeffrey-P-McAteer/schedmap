@@ -33,6 +33,27 @@ impl fmt::Debug for BusWrapper {
 }
 
 #[derive(Debug)]
+pub struct EmployeeBadgeIn {
+  pub employee_badge_id: String,
+  pub employee_location: Option<String>, // None indicates not badged in anywhere
+}
+
+impl EmployeeBadgeIn {
+  pub fn new(employee_badge_id: String) -> EmployeeBadgeIn {
+    EmployeeBadgeIn {
+      employee_badge_id: employee_badge_id,
+      employee_location: None
+    }
+  }
+}
+
+impl PartialEq for EmployeeBadgeIn {
+    fn eq(&self, other: &EmployeeBadgeIn) -> bool {
+        self.employee_badge_id == other.employee_badge_id
+    }
+}
+
+#[derive(Debug)]
 pub struct GCS { // Global Context Singleton
   // These fields will be available to all HTTP handlers in routes
   pub num_visitors: u8,
@@ -40,7 +61,7 @@ pub struct GCS { // Global Context Singleton
   pub broadcast_to_browsers: BusWrapper,
   pub svg_map: Option<String>,
   pub num_connected_machines: u16,
-  pub badged_in_employee_ids: Vec<String>,
+  pub badged_in_employee_ids: Vec<EmployeeBadgeIn>,
 }
 
 impl GCS {

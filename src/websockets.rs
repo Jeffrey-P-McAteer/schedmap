@@ -6,12 +6,31 @@
 
 use ws;
 use crate::state::global_context_singleton;
+use crate::state::EmployeeBadgeIn;
 
 pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Error> {
   let mut data_str: String = format!("{}", data);
   
   if data_str == "browser-has-connected" {
     global_context_singleton.change_connected_machines(1);
+    
+    // Tell the new browser which rooms are occupied
+    match global_context_singleton.ptr.lock() {
+      Ok(gcs) => {
+        for punched_in_employee_status in &gcs.badged_in_employee_ids {
+          if punched_in_employee_status.employee_location.is_none() {
+            continue; // ???
+          }
+          out.send(
+            format!("change_map_svg_elm_color('{}', 'green');", punched_in_employee_status.employee_location.clone().expect("Could not get employee location!"))
+          ).expect("Could not send change to browser");
+        }
+      }
+      Err(e) => {
+        println!("{}", e);
+      }
+    }
+    
     return Ok(());
   }
   
@@ -38,9 +57,11 @@ document.getElementById('badge_id_input').value = '';
         
         println!("Someone with ID {} just badged in at {}", id, location);
         
-        if gcs.badged_in_employee_ids.contains(&id) {
+        let emp_id_obj = EmployeeBadgeIn::new(id.clone());
+        
+        if gcs.badged_in_employee_ids.contains(&emp_id_obj) {
           // Employee is LEAVING work
-          let index = gcs.badged_in_employee_ids.iter().position(|r| r == &id).unwrap();
+          let index = gcs.badged_in_employee_ids.iter().position(|r| r == &emp_id_obj).unwrap();
           gcs.badged_in_employee_ids.remove(index);
           gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'yellow');", location));
           out.send(r#"
@@ -50,7 +71,10 @@ setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
         }
         else {
           // The employee is coming IN to work
-          gcs.badged_in_employee_ids.push(id.clone());
+          gcs.badged_in_employee_ids.push(EmployeeBadgeIn {
+            employee_badge_id: id,
+            employee_location: Some(location.clone()),
+          });
           gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
           out.send(r#"
 document.body.style.background = 'green';
