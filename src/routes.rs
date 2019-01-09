@@ -124,6 +124,8 @@ pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<String> {
 
 #[post("/upload_map", data = "<data>")]
 pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data, multip_boundry: MultiPartBoundry) -> Html<&'static str> {
+  use std::fs;
+  
   match gcs_bundle.ptr.lock() {
     Ok(mut gcs) => {
       //let mut data_buffer: Vec<u8> = vec![];
@@ -139,7 +141,16 @@ pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data, multip_boundry: MultiPa
       let mut new_svg_map_str: String = String::new();
       svg_reader.read_to_string(&mut new_svg_map_str).unwrap();
       
-      gcs.svg_map = Some(new_svg_map_str);
+      gcs.svg_map = Some(new_svg_map_str.clone());
+      
+      // We also need to write to gcs.get_data_dir() / "svg_map.svg"
+      
+      let mut svg_map_file = gcs.get_data_dir();
+      svg_map_file.push("svg_map.svg");
+      let svg_map_file = svg_map_file.as_path();
+      fs::write(svg_map_file, new_svg_map_str.clone() ).expect("Unable to write file");
+      
+      println!("Saved new SVG map to {:?}", svg_map_file);
       
     },
     Err(e) => {
