@@ -1,3 +1,6 @@
 /target
 **/*.rs.bk
 .devnotes.md
+.deployment-id-rsa
+.deployment-id-rsa-pub
+.deployment.ini
