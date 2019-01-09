@@ -70,6 +70,60 @@ impl GCS {
       }
     }
   }
+  pub fn get_map_room_ids(&self) -> Vec<String> {
+    use quick_xml::{Reader, events::Event};
+    use std::str;
+    
+    let mut room_ids: Vec<String> = vec![];
+    
+    match &self.svg_map {
+      Some(svg_map) => {
+        let our_svg_map = svg_map.clone();
+        let our_svg_map = our_svg_map.as_str();
+        let mut reader = Reader::from_str(our_svg_map);
+        reader.trim_text(true);
+        
+        loop {
+          let mut buf = Vec::new();
+          match reader.read_event(&mut buf) {
+            Ok(Event::Start(ref e)) => {
+                match e.name() {
+                    b"rect" => {
+                      let mut attrib_iter = e.attributes();
+                      let attrib_iter = attrib_iter.with_checks(false);
+                      
+                      for attrib in attrib_iter {
+                        match attrib {
+                          Ok(attrib) => {
+                            let key = str::from_utf8(attrib.key).expect("Error decoding an xml attribute");
+                            let value = str::from_utf8(&attrib.value).expect("Error decoding an xml attribute");
+                            if key == "id" {
+                              room_ids.push(value.to_string());
+                            }
+                            // Debugging
+                            //println!("{}={}", key, value);
+                          }
+                          Err(e) => {
+                            println!("{}", e);
+                          }
+                        }
+                      }
+                      
+                    },
+                    //b"tag2" => count += 1,
+                    _ => (),
+                }
+            },
+            Ok(Event::Eof) => break, // exits the loop when reaching end of file
+            Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+            _ => (),
+          }
+        }
+      }
+      None => { }
+    }
+    return room_ids;
+  }
 }
 
 pub struct GCSBundle {

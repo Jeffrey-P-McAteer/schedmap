@@ -20,6 +20,8 @@ use docopt::Docopt;
 
 extern crate directories;
 
+extern crate quick_xml;
+
 use std::thread;
 
 // Holds HTTP route functions responsible for passing data into and out of client apps
@@ -83,7 +85,9 @@ fn main() {
   
   if args.flag_version {
     println!("schedmap version {}", VERSION);
-    println!("schedmap config_dir = {:?}", state::global_context_singleton.ptr.lock().unwrap().get_data_dir() );
+    let mut gcs = state::global_context_singleton.ptr.lock().unwrap();
+    println!("schedmap config_dir = {:?}", gcs.get_data_dir() );
+    println!("schedmap get_map_room_ids = {:?}", gcs.get_map_room_ids() );
     return;
   }
   

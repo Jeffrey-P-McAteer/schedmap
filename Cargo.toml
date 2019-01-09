@@ -26,4 +26,5 @@ bus = "2.0.1"
 # Used to get uploaded files
 multipart = "*"
 
+quick-xml = "0.13.1"
 
