@@ -6,7 +6,8 @@ import sys
 if sys.version_info[0] < 3:
   raise Exception("Script requires Python 3")
 
-import os, subprocess, configparser, shutil
+import os, subprocess, configparser, shutil, socket
+import datetime
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -14,6 +15,11 @@ def eprint(*args, **kwargs):
 if __name__ == '__main__':
   # cd into wherever this script is held
   os.chdir(os.path.abspath(os.path.dirname(__file__)))
+  
+  # Setup some env variables to handle edge cases
+  os.environ["HOST"] = str(socket.gethostname())
+  os.environ["GIT_HASH"] = str(socket.gethostname())
+  os.environ["COMPILE_DATE"] = str(subprocess.Popen(["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE).stdout.read())
   
   # Build local code
   returncode = subprocess.call(["cargo", "build", "--release", "--target=x86_64-unknown-linux-musl"], stdout=sys.stdout, stderr=sys.stderr)

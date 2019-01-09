@@ -31,6 +31,11 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
       }
     }
     
+    // Tell browser about version
+    out.send(
+      format!("var m = document.getElementById('versionmessage'); if (m) {{ m.innerHTML = '{}'; }} ", crate::get_version_string() )
+    ).expect("Could not send change to browser");
+    
     return Ok(());
   }
   

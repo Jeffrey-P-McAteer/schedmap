@@ -100,13 +100,9 @@ function setup_websocket() {
 }
 
 window.addEventListener("load", function() {
-  if (window.location.pathname.includes("/app_home.html")) {
-    // Spawn websocket handler
-    setup_websocket();
-    
-  }
-  else if (window.location.pathname.includes("/app_badge_input.html")) {
-    setup_websocket();
+  setup_websocket();
+  
+  if (window.location.pathname.includes("/app_badge_input.html")) {
     constantly_re_focus_badge_id_input();
     
   }

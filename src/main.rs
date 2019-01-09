@@ -35,6 +35,17 @@ mod state;
 mod websockets;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
+// These two vars are only set when deploying (unless you'd like to set them yourself)
+const COMPILE_GIT_HASH: Option<&'static str> = option_env!("GIT_HASH");
+const COMPILE_DATE: Option<&'static str> = option_env!("COMPILE_DATE");
+
+const COMPILE_LINUX_USER: Option<&'static str> = option_env!("USER");
+const COMPILE_WIN_USER: Option<&'static str> = option_env!("USERNAME");
+
+const COMPILE_LINUX_HOST: Option<&'static str> = option_env!("HOST"); // I think this is actually a zsh-ism
+const COMPILE_WIN_HOST: Option<&'static str> = option_env!("USERDOMAIN");
+
 const USAGE: &'static str = r#"
 The swiss army knife of all scheduling.
 
@@ -193,5 +204,30 @@ fn run_server(args: Args) {
   
   websocket_handle.join().expect("Error when websocket_handle exited");
   webserver_handle.join().expect("Error when webserver_handle exited");
+}
+
+pub fn get_version_string() -> String {
+  let user = match COMPILE_LINUX_USER {
+    Some(user) => user,
+    None => {
+      match COMPILE_WIN_USER {
+        Some(user) => user,
+        None => "USERNAME",
+      }
+    }
+  };
+  let host = match COMPILE_LINUX_HOST {
+    Some(host) => host,
+    None => {
+      match COMPILE_WIN_HOST {
+        Some(host) => host,
+        None => "HOSTNAME",
+      }
+    }
+  };
+  let git_hash = COMPILE_GIT_HASH.unwrap_or("NONE");
+  let compile_date = COMPILE_DATE.unwrap_or("UNK");
+  // String should not contain single quotes, it is embedded into JS land
+  return format!("Version {} hash {}, compiled by {} on {} at {}", VERSION, git_hash, user, host, compile_date);
 }
 
