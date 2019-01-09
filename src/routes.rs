@@ -48,7 +48,10 @@ pub fn appvariables_js(gcs_bundle: GCSBundle) -> JavaScript<String> {
       let websocket_port = unsafe { crate::MAIN_ARGS.clone() }.unwrap().flag_websocket_port;
       return JavaScript(format!(r#"
 window.websocket_port = {};
-"#, websocket_port) );
+window.map_room_ids = {:?};
+"#,
+  websocket_port, gcs.get_map_room_ids()
+  ) );
     },
     Err(e) => {
       return JavaScript(format!("console.log('{:?}');", e));

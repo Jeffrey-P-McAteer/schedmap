@@ -21,11 +21,23 @@ function constantly_re_focus_badge_id_input() {
   var location_in_elm = document.getElementById('location_input');
   var id_in_elm = document.getElementById('badge_id_input');
   
-  // Restore remembered data
-  location_in_elm.value = window.localStorage.getItem("location") || "";
+  var last_location = window.localStorage.getItem("location") || "";
+  
+  // Populate location using window.map_room_ids
+  for (var i=0; i<window.map_room_ids.length; i++) {
+    var room_id = window.map_room_ids[i];
+    var opt = document.createElement("option");
+    opt.value= room_id;
+    opt.innerHTML = room_id;
+    if (room_id.trim() == last_location.trim()) {
+      opt.selected = 'selected';
+    }
+    
+    location_in_elm.appendChild(opt);
+  }
   
   location_in_elm.onchange = function() {
-    window.localStorage.setItem("location", location_in_elm.value);
+    window.localStorage.setItem("location", location_in_elm.options[location_in_elm.selectedIndex].value );
   };
   
   id_in_elm.onchange = function() {
