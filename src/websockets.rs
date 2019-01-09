@@ -25,22 +25,38 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
     
     id.truncate(id.len()-1); // remove a trailing ':' character from id
     
-    // TODO lookup ID, determine and transmit location change.
-    println!("Someone with ID {} just badged in at {}", id, location);
-    
     // tell client to clear their input field
     
     out.send(r#"
 document.getElementById('badge_id_input').value = '';
-document.body.style.background = 'green';
-setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
 "#).expect("Could not send to browser");
     
     // Tell all browsers to set map location to full
     
     match global_context_singleton.ptr.lock() {
       Ok(mut gcs) => {
-        gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
+        
+        println!("Someone with ID {} just badged in at {}", id, location);
+        
+        if gcs.badged_in_employee_ids.contains(&id) {
+          // Employee is LEAVING work
+          let index = gcs.badged_in_employee_ids.iter().position(|r| r == &id).unwrap();
+          gcs.badged_in_employee_ids.remove(index);
+          gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'yellow');", location));
+          out.send(r#"
+document.body.style.background = 'yellow';
+setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
+"#).expect("Could not send to browser");
+        }
+        else {
+          // The employee is coming IN to work
+          gcs.badged_in_employee_ids.push(id.clone());
+          gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
+          out.send(r#"
+document.body.style.background = 'green';
+setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
+"#).expect("Could not send to browser");
+        }
       },
       Err(e) => {
         println!("{}", e);

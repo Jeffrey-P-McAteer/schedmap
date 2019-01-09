@@ -40,6 +40,7 @@ pub struct GCS { // Global Context Singleton
   pub broadcast_to_browsers: BusWrapper,
   pub svg_map: Option<String>,
   pub num_connected_machines: u16,
+  pub badged_in_employee_ids: Vec<String>,
 }
 
 impl GCS {
@@ -109,7 +110,7 @@ impl GCSBundle {
         },
         svg_map: Some(svg_map),
         num_connected_machines: 0,
-        
+        badged_in_employee_ids: vec![],
       })),
     };
   }
