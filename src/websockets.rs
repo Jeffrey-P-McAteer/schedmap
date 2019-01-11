@@ -12,24 +12,20 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
   let mut data_str: String = format!("{}", data);
   
   if data_str == "browser-has-connected" {
-    global_context_singleton.change_connected_machines(1);
+    global_context_singleton.with_gcs_mut(|gcs| {
+      gcs.change_connected_machines(1);
+    });
     
-    // Tell the new browser which rooms are occupied
-    match global_context_singleton.ptr.lock() {
-      Ok(gcs) => {
-        for punched_in_employee_status in &gcs.badged_in_employee_ids {
-          if punched_in_employee_status.employee_location.is_none() {
-            continue; // ???
-          }
-          out.send(
-            format!("change_map_svg_elm_color('{}', 'green');", punched_in_employee_status.employee_location.clone().expect("Could not get employee location!"))
-          ).expect("Could not send change to browser");
+    global_context_singleton.with_gcs(|gcs| {
+      for punched_in_employee_status in &gcs.badged_in_employee_ids {
+        if punched_in_employee_status.employee_location.is_none() {
+          continue; // ???
         }
+        out.send(
+          format!("change_map_svg_elm_color('{}', 'green');", punched_in_employee_status.employee_location.clone().expect("Could not get employee location!"))
+        ).expect("Could not send change to browser");
       }
-      Err(e) => {
-        println!("{}", e);
-      }
-    }
+    });
     
     // Tell browser about version
     out.send(
@@ -57,40 +53,34 @@ document.getElementById('badge_id_input').value = '';
     
     // Tell all browsers to set map location to full
     
-    match global_context_singleton.ptr.lock() {
-      Ok(mut gcs) => {
-        
-        println!("Someone with ID {} just badged in at {}", id, location);
-        
-        let emp_id_obj = EmployeeBadgeIn::new(id.clone());
-        
-        if gcs.badged_in_employee_ids.contains(&emp_id_obj) {
-          // Employee is LEAVING work
-          let index = gcs.badged_in_employee_ids.iter().position(|r| r == &emp_id_obj).unwrap();
-          gcs.badged_in_employee_ids.remove(index);
-          gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'yellow');", location));
-          out.send(r#"
+    global_context_singleton.with_gcs_mut(|gcs| {
+      println!("Someone with ID {} just badged in at {}", id, location);
+      
+      let emp_id_obj = EmployeeBadgeIn::new(id.clone());
+      
+      if gcs.badged_in_employee_ids.contains(&emp_id_obj) {
+        // Employee is LEAVING work
+        let index = gcs.badged_in_employee_ids.iter().position(|r| r == &emp_id_obj).unwrap();
+        gcs.badged_in_employee_ids.remove(index);
+        gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'yellow');", location));
+        out.send(r#"
 document.body.style.background = 'yellow';
 setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
 "#).expect("Could not send to browser");
-        }
-        else {
-          // The employee is coming IN to work
-          gcs.badged_in_employee_ids.push(EmployeeBadgeIn {
-            employee_badge_id: id,
-            employee_location: Some(location.clone()),
-          });
-          gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
-          out.send(r#"
+      }
+      else {
+        // The employee is coming IN to work
+        gcs.badged_in_employee_ids.push(EmployeeBadgeIn {
+          employee_badge_id: id.clone(),
+          employee_location: Some(location.clone()),
+        });
+        gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
+        out.send(r#"
 document.body.style.background = 'green';
 setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
 "#).expect("Could not send to browser");
-        }
-      },
-      Err(e) => {
-        println!("{}", e);
       }
-    }
+    });
     
     return Ok(());
   }
@@ -98,15 +88,10 @@ setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
   println!("From browser: {}", data_str);
   
   // Send to all other nodes
-  match global_context_singleton.ptr.lock() {
-    Ok(mut gcs) => {
-      // Send a message to everyone listening
-      gcs.broadcast_to_browsers.bus.broadcast(data_str);
-    },
-    Err(e) => {
-      println!("{}", e);
-    }
-  }
+  global_context_singleton.with_gcs_mut(|gcs| {
+    // Send a message to everyone listening
+    gcs.broadcast_to_browsers.bus.broadcast(data_str.clone());
+  });
   
   //out.send( format!("Server got your ({}) ", data) ).expect("Could not send to browser");
   

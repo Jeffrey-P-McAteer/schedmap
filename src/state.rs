@@ -13,7 +13,7 @@ use rocket::request::FromRequest;
 
 use directories::{BaseDirs, UserDirs, ProjectDirs};
 
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard};
 
 use std::path::{PathBuf};
 use std::fs;
@@ -145,6 +145,11 @@ impl GCS {
     }
     return room_ids;
   }
+  
+  pub fn change_connected_machines(&mut self, delta: isize) {
+    self.num_connected_machines = ((self.num_connected_machines as isize) + delta) as u16;
+  }
+  
 }
 
 pub struct GCSBundle {
@@ -195,10 +200,23 @@ impl GCSBundle {
     };
   }
   
-  pub fn change_connected_machines(&self, delta: isize) {
+  pub fn with_gcs_mut<F>(&self, f: F) where F: Fn(&mut MutexGuard<GCS>) {
+    use std::borrow::BorrowMut;
     match self.ptr.lock() {
       Ok(mut gcs) => {
-        gcs.num_connected_machines = ((gcs.num_connected_machines as isize) + delta) as u16;
+        f(gcs.borrow_mut());
+      }
+      Err(e) => {
+        println!("{}", e);
+      }
+    }
+  }
+  
+  pub fn with_gcs<F>(&self, f: F) where F: Fn(&MutexGuard<GCS>) {
+    use std::borrow::Borrow;
+    match self.ptr.lock() {
+      Ok(gcs) => {
+        f(gcs.borrow());
       }
       Err(e) => {
         println!("{}", e);
