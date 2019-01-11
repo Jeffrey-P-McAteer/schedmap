@@ -158,4 +158,43 @@ pub fn app_upload_map(data: Data, multip_boundry: MultiPartBoundry) -> Html<&'st
 "#)
 }
 
+#[post("/upload_employees", data = "<data>")]
+pub fn app_upload_employees(data: Data, multip_boundry: MultiPartBoundry) -> Html<&'static str> {
+  use std::fs;
+  
+  match global_context_singleton.ptr.lock() {
+    Ok(mut gcs) => {
+      //let mut data_buffer: Vec<u8> = vec![];
+      //data.stream_to(&mut data_buffer).expect("Failed to write SVG to memory buffer");
+      
+      let mut mp = multipart::server::Multipart::with_body(data.open(), multip_boundry.to_string() );
+      let entries = mp.save().temp().into_entries().expect("Could not unwrap into_entries");
+      //println!("{:#?}", entries);
+      
+      let employee_contents = &entries.fields.get(&"data".to_string()).unwrap()[0].data;
+      let mut employee_reader = employee_contents.readable().unwrap();
+      
+      let mut new_employee_str: String = String::new();
+      employee_reader.read_to_string(&mut new_employee_str).unwrap();
+      
+      let mut employees_file = gcs.get_data_dir();
+      employees_file.push("known_employees.csv");
+      let employees_file = employees_file.as_path();
+      fs::write(employees_file, new_employee_str.clone() ).expect("Unable to write file");
+      
+      println!("Saved new Employees CSV to {:?}", employees_file);
+      
+      let config_dir_s = gcs.get_data_dir().as_path().to_string_lossy().to_string();
+      gcs.known_employees = GCSBundle::read_employee_records( &config_dir_s );
+      
+    },
+    Err(e) => {
+      println!("{}", e);
+    }
+  }
+  Html(r#"
+<p>Employees Changed!</p>
+"#)
+}
+
 

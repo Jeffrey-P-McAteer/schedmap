@@ -196,6 +196,7 @@ fn run_server(args: Args) {
       
       routes::app_locations,
         routes::app_upload_map,
+        routes::app_upload_employees,
       
       routes::app_badge_input,
       

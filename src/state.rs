@@ -203,7 +203,7 @@ impl GCSBundle {
     };
   }
   
-  fn read_svg_map(data_dir: &String) -> String {
+  pub fn read_svg_map(data_dir: &String) -> String {
     match fs::read_to_string(format!("{}/svg_map.svg", data_dir)) {
       Ok(svg_contents) => svg_contents,
       Err(e) => {
@@ -229,7 +229,7 @@ impl GCSBundle {
     }
   }
   
-  fn read_employee_records(data_dir: &String) -> Vec<EmployeeRecord> {
+  pub fn read_employee_records(data_dir: &String) -> Vec<EmployeeRecord> {
     let mut built_vec: Vec<EmployeeRecord> = vec![];
     let file = fs::File::open(format!("{}/known_employees.csv", data_dir));
     match file {

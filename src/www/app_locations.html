@@ -13,5 +13,15 @@
       <input type="submit" value="Change Map">
     </form>
     <a href="app_home/map.svg">Download current map</a>
+    
+    <form action="upload_employees" method="POST" enctype="multipart/form-data">
+      <p>
+        This form is used to change the associations between employee badges and employee names.
+      </p>
+      <input type="file" id="data" name="data" accept="text/csv">
+      <input type="submit" value="Change Employees">
+    </form>
+    <a href="app_home/employees.csv">Download current employees CSV</a>
+    
   </body>
 </html>
