@@ -19,16 +19,11 @@ use crate::routes_types::*;
 use std::io::Read;
 
 #[get("/")]
-pub fn index(gcs_bundle: GCSBundle) -> Html<&'static str> {
-  match gcs_bundle.ptr.lock() {
-    Ok(mut gcs) => {
-      // Increment, overwrapping via modulo operator
-      gcs.num_visitors = ((gcs.num_visitors as u64 + 1) % 255) as u8;
-    },
-    Err(e) => {
-      println!("{}", e);
-    }
-  }
+pub fn index() -> Html<&'static str> {
+  global_context_singleton.with_gcs_mut(|gcs| {
+    // Increment, overwrapping via modulo operator
+    gcs.num_visitors = ((gcs.num_visitors as u64 + 1) % 255) as u8;
+  }).expect("Could not lock GCS");
   Html(include_str!("www/client_app.html"))
 }
 
@@ -70,8 +65,8 @@ pub fn style() -> Css<&'static str> {
 
 // Dumps pretty-formatted global state data for the server
 #[get("/debug")]
-pub fn debug(gcs_bundle: GCSBundle) -> String {
-  match gcs_bundle.ptr.lock() {
+pub fn debug() -> String {
+  match global_context_singleton.ptr.lock() {
     Ok(mut gcs) => {
       let _x = gcs.get_data_dir();
       return format!("{:#?}", *gcs);
@@ -84,7 +79,7 @@ pub fn debug(gcs_bundle: GCSBundle) -> String {
 
 
 #[get("/app_home.html")]
-pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
+pub fn app_home() -> Html<&'static str> {
   Html(r#"
 <script src="appvariables.js"></script>
 <script src="app.js"></script>
@@ -93,8 +88,8 @@ pub fn app_home(_gcs_bundle: GCSBundle) -> Html<&'static str> {
 }
 
 #[get("/app_home/map.svg")]
-pub fn app_home_map(gcs_bundle: GCSBundle) -> Content<String> {
-  match gcs_bundle.ptr.lock() {
+pub fn app_home_map() -> Content<String> {
+  match global_context_singleton.ptr.lock() {
     Ok(gcs) => {
       match &gcs.svg_map {
         Some(map_str) => {
@@ -114,20 +109,20 @@ pub fn app_home_map(gcs_bundle: GCSBundle) -> Content<String> {
 }
 
 #[get("/app_badge_input.html")]
-pub fn app_badge_input(_gcs_bundle: GCSBundle) -> Html<String> {
+pub fn app_badge_input() -> Html<String> {
   Html(include_str!("www/app_badge_input.html").to_string())
 }
 
 #[get("/app_locations.html")]
-pub fn app_locations(_gcs_bundle: GCSBundle) -> Html<String> {
+pub fn app_locations() -> Html<String> {
   Html(include_str!("www/app_locations.html").to_string())
 }
 
 #[post("/upload_map", data = "<data>")]
-pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data, multip_boundry: MultiPartBoundry) -> Html<&'static str> {
+pub fn app_upload_map(data: Data, multip_boundry: MultiPartBoundry) -> Html<&'static str> {
   use std::fs;
   
-  match gcs_bundle.ptr.lock() {
+  match global_context_singleton.ptr.lock() {
     Ok(mut gcs) => {
       //let mut data_buffer: Vec<u8> = vec![];
       //data.stream_to(&mut data_buffer).expect("Failed to write SVG to memory buffer");
@@ -159,7 +154,7 @@ pub fn app_upload_map(gcs_bundle: GCSBundle, data: Data, multip_boundry: MultiPa
     }
   }
   Html(r#"
-<p>Thanks!</p>
+<p>Map Uploaded!</p>
 "#)
 }
 

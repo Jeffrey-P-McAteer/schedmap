@@ -235,16 +235,3 @@ lazy_static! {
   // This variable stores all global server state data
   pub static ref global_context_singleton: GCSBundle = GCSBundle::new();
 }
-
-impl<'r, 'a> FromRequest<'r, 'a> for GCSBundle {
-  type Error = ();
-
-  fn from_request(_request: &'r Request<'a>) -> request::Outcome<GCSBundle, ()> {
-    // Always return the same mutex value by cloning the Arc pointer to it
-    return Outcome::Success(
-      GCSBundle { ptr: global_context_singleton.ptr.clone() }
-    );
-  }
-}
-
-
