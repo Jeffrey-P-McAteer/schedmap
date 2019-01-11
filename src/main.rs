@@ -22,6 +22,8 @@ extern crate directories;
 
 extern crate quick_xml;
 
+extern crate csv;
+
 use std::thread;
 
 // Holds HTTP route functions responsible for passing data into and out of client apps
@@ -99,6 +101,7 @@ fn main() {
     let mut gcs = state::global_context_singleton.ptr.lock().unwrap();
     println!("schedmap config_dir = {:?}", gcs.get_data_dir() );
     println!("schedmap get_map_room_ids = {:?}", gcs.get_map_room_ids() );
+    println!("schedmap known_employees = {:?}", gcs.known_employees );
     return;
   }
   

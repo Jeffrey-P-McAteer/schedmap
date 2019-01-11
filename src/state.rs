@@ -13,6 +13,8 @@ use rocket::request::FromRequest;
 
 use directories::{BaseDirs, UserDirs, ProjectDirs};
 
+use csv;
+
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use std::path::{PathBuf};
@@ -54,6 +56,27 @@ impl PartialEq for EmployeeBadgeIn {
 }
 
 #[derive(Debug)]
+pub struct EmployeeRecord {
+  pub employee_badge_id: String,
+  pub employee_name: String,
+}
+
+impl EmployeeRecord {
+  pub fn new(employee_badge_id: String, employee_name: String) -> EmployeeRecord {
+    EmployeeRecord {
+      employee_badge_id: employee_badge_id,
+      employee_name: employee_name
+    }
+  }
+}
+
+impl PartialEq for EmployeeRecord {
+    fn eq(&self, other: &EmployeeRecord) -> bool {
+        self.employee_badge_id == other.employee_badge_id
+    }
+}
+
+#[derive(Debug)]
 pub struct GCS { // Global Context Singleton
   // These fields will be available to all HTTP handlers in routes
   pub num_visitors: u8,
@@ -62,6 +85,7 @@ pub struct GCS { // Global Context Singleton
   pub svg_map: Option<String>,
   pub num_connected_machines: u16,
   pub badged_in_employee_ids: Vec<EmployeeBadgeIn>,
+  pub known_employees: Vec<EmployeeRecord>,
 }
 
 impl GCS {
@@ -186,6 +210,38 @@ impl GCSBundle {
       }
     };
     
+    let known_employees = {
+      let mut built_vec: Vec<EmployeeRecord> = vec![];
+      let file = fs::File::open(format!("{}/known_employees.csv", data_dir));
+      match file {
+        Ok(file) => {
+          let mut rdr = csv::Reader::from_reader(file);
+          for result in rdr.records() {
+            match result {
+              Ok(record) => {
+                built_vec.push(
+                  EmployeeRecord::new(
+                    record.get(0).unwrap_or("").to_string(),
+                    record.get(1).unwrap_or("").to_string(),
+                  )
+                );
+              }
+              Err(e) => {
+                println!("{}", e);
+              }
+            }
+          }
+
+          
+        }
+        Err(e) => {
+          println!("{}", e);
+        }
+      }
+      
+      built_vec
+    };
+    
     return GCSBundle {
       ptr: Arc::new(Mutex::new(GCS {
         num_visitors: 0,
@@ -196,6 +252,7 @@ impl GCSBundle {
         svg_map: Some(svg_map),
         num_connected_machines: 0,
         badged_in_employee_ids: vec![],
+        known_employees: known_employees,
       })),
     };
   }
