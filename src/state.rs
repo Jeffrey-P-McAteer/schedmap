@@ -34,7 +34,7 @@ impl fmt::Debug for BusWrapper {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EmployeeBadgeIn {
   pub employee_badge_id: String,
   pub employee_location: Option<String>, // None indicates not badged in anywhere
@@ -55,7 +55,7 @@ impl PartialEq for EmployeeBadgeIn {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EmployeeRecord {
   pub employee_badge_id: String,
   pub employee_name: String,
@@ -172,6 +172,15 @@ impl GCS {
   
   pub fn change_connected_machines(&mut self, delta: isize) {
     self.num_connected_machines = ((self.num_connected_machines as isize) + delta) as u16;
+  }
+  
+  pub fn get_employee_name(&self, employee_id: String) -> Option<String> {
+    for known_employee in self.known_employees.clone() {
+      if known_employee.employee_badge_id == employee_id {
+        return Some(known_employee.employee_name.clone());
+      }
+    }
+    return None;
   }
   
 }

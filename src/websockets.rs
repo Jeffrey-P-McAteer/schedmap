@@ -54,7 +54,7 @@ document.getElementById('badge_id_input').value = '';
     // Tell all browsers to set map location to full
     
     global_context_singleton.with_gcs_mut(|gcs| {
-      println!("Someone with ID {} just badged in at {}", id, location);
+      println!("Someone with ID {}, name {:?} just badged in at {}", id.clone(), gcs.get_employee_name(id.clone()), location );
       
       let emp_id_obj = EmployeeBadgeIn::new(id.clone());
       
