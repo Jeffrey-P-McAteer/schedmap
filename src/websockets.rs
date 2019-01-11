@@ -14,7 +14,7 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
   if data_str == "browser-has-connected" {
     global_context_singleton.with_gcs_mut(|gcs| {
       gcs.change_connected_machines(1);
-    });
+    }).expect("Could not lock GCS");
     
     global_context_singleton.with_gcs(|gcs| {
       for punched_in_employee_status in &gcs.badged_in_employee_ids {
@@ -25,7 +25,7 @@ pub fn handle_incoming(out: &ws::Sender, data: ws::Message) -> Result<(), ws::Er
           format!("change_map_svg_elm_color('{}', 'green');", punched_in_employee_status.employee_location.clone().expect("Could not get employee location!"))
         ).expect("Could not send change to browser");
       }
-    });
+    }).expect("Could not lock GCS");
     
     // Tell browser about version
     out.send(
@@ -80,7 +80,7 @@ document.body.style.background = 'green';
 setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
 "#).expect("Could not send to browser");
       }
-    });
+    }).expect("Could not lock GCS");
     
     return Ok(());
   }
@@ -91,7 +91,7 @@ setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
   global_context_singleton.with_gcs_mut(|gcs| {
     // Send a message to everyone listening
     gcs.broadcast_to_browsers.bus.broadcast(data_str.clone());
-  });
+  }).expect("Could not lock GCS");
   
   //out.send( format!("Server got your ({}) ", data) ).expect("Could not send to browser");
   
