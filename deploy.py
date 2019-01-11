@@ -34,6 +34,15 @@ if __name__ == '__main__':
       eprint(f"Error: file is missing: '{req_file}'")
       sys.exit(1)
   
+  # Strip binary if the 'strip' program is available
+  if shutil.which("strip") != None:
+    print("Stripping binary...")
+    subprocess.call(["ls", "-alh", schedmap_bin], stdout=sys.stdout, stderr=sys.stderr)
+    subprocess.call(["strip", "-s", schedmap_bin], stdout=sys.stdout, stderr=sys.stderr)
+    subprocess.call(["ls", "-alh", schedmap_bin], stdout=sys.stdout, stderr=sys.stderr)
+  else:
+    print("Cannot strip binary because program 'strip' is not available.")
+    
   config = configparser.ConfigParser()
   config.read(".deployment.ini")
   
