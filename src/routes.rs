@@ -41,22 +41,20 @@ pub fn app_js() -> JavaScript<&'static str> {
  * such as the websocket port.
  */
 #[get("/appvariables.js")]
-pub fn appvariables_js(gcs_bundle: GCSBundle) -> JavaScript<String> {
-  match gcs_bundle.ptr.lock() {
-    Ok(mut gcs) => {
+pub fn appvariables_js() -> JavaScript<String> {
+  let maybe_js = global_context_singleton.with_gcs_mut(|gcs| {
       let _x = gcs.get_data_dir();
       let websocket_port = unsafe { crate::MAIN_ARGS.clone() }.unwrap().flag_websocket_port;
-      return JavaScript(format!(r#"
+      
+      JavaScript(format!(r#"
 window.websocket_port = {};
 window.map_room_ids = {:?};
 "#,
   websocket_port, gcs.get_map_room_ids()
-  ) );
-    },
-    Err(e) => {
-      return JavaScript(format!("console.log('{:?}');", e));
-    }
-  }
+  ) )
+
+  });
+  return maybe_js.unwrap_or(JavaScript(format!("console.log('some error happened!');")));
 }
 
 // 3rd-party library to capture QR codes via a webcam.

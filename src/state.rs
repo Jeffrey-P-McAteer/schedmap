@@ -13,7 +13,7 @@ use rocket::request::FromRequest;
 
 use directories::{BaseDirs, UserDirs, ProjectDirs};
 
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use std::path::{PathBuf};
 use std::fs;
@@ -200,26 +200,30 @@ impl GCSBundle {
     };
   }
   
-  pub fn with_gcs_mut<F>(&self, f: F) where F: Fn(&mut MutexGuard<GCS>) {
+  pub fn with_gcs_mut<F, T>(&self, f: F) -> Result<T, PoisonError<MutexGuard<GCS>>> where F: Fn(&mut MutexGuard<GCS>) -> T {
     use std::borrow::BorrowMut;
     match self.ptr.lock() {
       Ok(mut gcs) => {
-        f(gcs.borrow_mut());
+        let stuff = f(gcs.borrow_mut());
+        return Ok(stuff);
       }
       Err(e) => {
         println!("{}", e);
+        return Err(e);
       }
     }
   }
   
-  pub fn with_gcs<F>(&self, f: F) where F: Fn(&MutexGuard<GCS>) {
+  pub fn with_gcs<F, T>(&self, f: F) -> Result<T, PoisonError<MutexGuard<GCS>>> where F: Fn(&MutexGuard<GCS>) -> T {
     use std::borrow::Borrow;
     match self.ptr.lock() {
       Ok(gcs) => {
-        f(gcs.borrow());
+        let stuff = f(gcs.borrow());
+        return Ok(stuff);
       }
       Err(e) => {
         println!("{}", e);
+        return Err(e);
       }
     }
   }
