@@ -186,7 +186,25 @@ impl GCSBundle {
     // data_dir may be null
     let data_dir = GCS::get_data_dir_static(&mut data_dir).into_os_string().into_string().unwrap();
     // Now it will either be specified or generated
-    let svg_map = match fs::read_to_string(format!("{}/svg_map.svg", data_dir)) {
+    let svg_map = GCSBundle::read_svg_map(&data_dir);
+    
+    return GCSBundle {
+      ptr: Arc::new(Mutex::new(GCS {
+        num_visitors: 0,
+        data_dir: Some(data_dir.clone()),
+        broadcast_to_browsers: BusWrapper {
+          bus: Bus::new(12),
+        },
+        svg_map: Some(svg_map),
+        num_connected_machines: 0,
+        badged_in_employee_ids: vec![],
+        known_employees: GCSBundle::read_employee_records(&data_dir),
+      })),
+    };
+  }
+  
+  fn read_svg_map(data_dir: &String) -> String {
+    match fs::read_to_string(format!("{}/svg_map.svg", data_dir)) {
       Ok(svg_contents) => svg_contents,
       Err(e) => {
         println!("{}", e);
@@ -204,57 +222,43 @@ impl GCSBundle {
    viewBox="0 0 200 100"
    version="1.1"
    sodipodi:docname="map.svg">
-  <text x="5" y="20" fill="black" font-size="12">No map, see the 'Locations' tab to upload a map.</text>
+  <text x="5" y="20" fill="black" font-size="12">No map, see the 'Config' tab to upload a map.</text>
 </svg>
 "#)
       }
-    };
-    
-    let known_employees = {
-      let mut built_vec: Vec<EmployeeRecord> = vec![];
-      let file = fs::File::open(format!("{}/known_employees.csv", data_dir));
-      match file {
-        Ok(file) => {
-          let mut rdr = csv::Reader::from_reader(file);
-          for result in rdr.records() {
-            match result {
-              Ok(record) => {
-                built_vec.push(
-                  EmployeeRecord::new(
-                    record.get(0).unwrap_or("").to_string(),
-                    record.get(1).unwrap_or("").to_string(),
-                  )
-                );
-              }
-              Err(e) => {
-                println!("{}", e);
-              }
+    }
+  }
+  
+  fn read_employee_records(data_dir: &String) -> Vec<EmployeeRecord> {
+    let mut built_vec: Vec<EmployeeRecord> = vec![];
+    let file = fs::File::open(format!("{}/known_employees.csv", data_dir));
+    match file {
+      Ok(file) => {
+        let mut rdr = csv::Reader::from_reader(file);
+        for result in rdr.records() {
+          match result {
+            Ok(record) => {
+              built_vec.push(
+                EmployeeRecord::new(
+                  record.get(0).unwrap_or("").to_string(),
+                  record.get(1).unwrap_or("").to_string(),
+                )
+              );
+            }
+            Err(e) => {
+              println!("{}", e);
             }
           }
+        }
 
-          
-        }
-        Err(e) => {
-          println!("{}", e);
-        }
+        
       }
-      
-      built_vec
-    };
+      Err(e) => {
+        println!("{}", e);
+      }
+    }
     
-    return GCSBundle {
-      ptr: Arc::new(Mutex::new(GCS {
-        num_visitors: 0,
-        data_dir: Some(data_dir),
-        broadcast_to_browsers: BusWrapper {
-          bus: Bus::new(12),
-        },
-        svg_map: Some(svg_map),
-        num_connected_machines: 0,
-        badged_in_employee_ids: vec![],
-        known_employees: known_employees,
-      })),
-    };
+    return built_vec;
   }
   
   pub fn with_gcs_mut<F, T>(&self, f: F) -> Result<T, PoisonError<MutexGuard<GCS>>> where F: Fn(&mut MutexGuard<GCS>) -> T {
