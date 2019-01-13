@@ -80,6 +80,31 @@ function change_map_svg_elm_color(elm_id, color) {
   svg_elm.style.fill = color;
 }
 
+function set_map_elm_person_name(elm_id, employee_name) {
+  if (window.person_name_elements == null) {
+    window.person_name_elements = {};
+  }
+  
+  var map_elm = document.getElementById("map");
+  var svg_elm = document.getElementById("map").getSVGDocument().getElementById(elm_id);
+  
+  var newText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  newText.setAttributeNS(null, "x", Number(svg_elm.getAttribute("x")) + 2 );
+  newText.setAttributeNS(null, "y", Number(svg_elm.getAttribute("y")) + Number(svg_elm.getAttribute("width")) - 20);
+  newText.setAttributeNS(null, "font-size", "6");
+  
+  var textNode = document.createTextNode( employee_name /* displayed text*/ );
+  newText.appendChild(textNode);
+  
+  if (window.person_name_elements[elm_id] != null) {
+    svg_elm.parentNode.removeChild(window.person_name_elements[elm_id]);
+  }
+  
+  svg_elm.parentNode.appendChild(newText);
+  window.person_name_elements[elm_id] = newText;
+  
+}
+
 function setup_websocket() {
   window.app_web_socket = new WebSocket("ws://" + location.hostname + ":"+window.websocket_port + "/");
   

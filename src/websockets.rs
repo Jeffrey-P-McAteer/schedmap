@@ -54,7 +54,8 @@ document.getElementById('badge_id_input').value = '';
     // Tell all browsers to set map location to full
     
     global_context_singleton.with_gcs_mut(|gcs| {
-      println!("Someone with ID {}, name {:?} just badged in at {}", id.clone(), gcs.get_employee_name(id.clone()), location );
+      let employee_name: Option<String> = gcs.get_employee_name(id.clone());
+      println!("Someone with ID {}, name {:?} just badged in at {}", id.clone(), &employee_name, location );
       
       let emp_id_obj = EmployeeBadgeIn::new(id.clone());
       
@@ -62,7 +63,12 @@ document.getElementById('badge_id_input').value = '';
         // Employee is LEAVING work
         let index = gcs.badged_in_employee_ids.iter().position(|r| r == &emp_id_obj).unwrap();
         gcs.badged_in_employee_ids.remove(index);
-        gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'yellow');", location));
+        gcs.broadcast_to_browsers.bus.broadcast(
+          format!("change_map_svg_elm_color('{}', 'yellow');", location)
+        );
+        gcs.broadcast_to_browsers.bus.broadcast(
+          format!("set_map_elm_person_name('{}', '');", location)
+        );
         out.send(r#"
 document.body.style.background = 'yellow';
 setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
@@ -75,6 +81,18 @@ setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
           employee_location: Some(location.clone()),
         });
         gcs.broadcast_to_browsers.bus.broadcast(format!("change_map_svg_elm_color('{}', 'green');", location));
+        if employee_name.is_some() {
+          // If we know the employee name, put it under the room label
+          gcs.broadcast_to_browsers.bus.broadcast(
+            format!("set_map_elm_person_name('{}', '{}');", location, employee_name.expect("Employee name"))
+          );
+        }
+        else {
+          // make it obvious we don't know them
+          gcs.broadcast_to_browsers.bus.broadcast(
+            format!("set_map_elm_person_name('{}', 'UNKNOWN CARD ID');", location)
+          );
+        }
         out.send(r#"
 document.body.style.background = 'green';
 setTimeout(function() { document.body.style.background = ''; }, 2 * 1000);
