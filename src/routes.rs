@@ -77,14 +77,9 @@ pub fn debug() -> String {
   }
 }
 
-
 #[get("/app_home.html")]
 pub fn app_home() -> Html<&'static str> {
-  Html(r#"
-<script src="appvariables.js"></script>
-<script src="app.js"></script>
-<object id="map" type="image/svg+xml" data="app_home/map.svg"></object>
-"#)
+  Html(include_str!("www/app_home.html"))
 }
 
 #[get("/app_home/map.svg")]
