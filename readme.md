@@ -48,3 +48,13 @@ Immediate TODOs include:
  - [ ] Flush out setup stuff - we should have lists of roles and employees, as well as global constraints (eg warn if employee is scheduled for >40hrs in any given week).
 
 
+# Misc Deployment notes
+
+Arch linux clients with an RFID reader may need these 2 packages installed:
+
+```bash
+sudo pacman -S libusb-compat usbredir
+```
+
+
+
