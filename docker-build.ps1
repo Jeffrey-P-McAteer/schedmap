@@ -1,3 +1,2 @@
 
-docker run -ti -v "$pwd":/src/ tomastomecek/rust cargo run
-
+docker run -ti -v "$pwd":/src/ -p 8000:8000 tomastomecek/rust cargo run
