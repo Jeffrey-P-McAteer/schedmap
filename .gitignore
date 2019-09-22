@@ -5,3 +5,4 @@
 .deployment-id-rsa-pub
 .deployment.ini
 /.cargo
+Cargo.lock
